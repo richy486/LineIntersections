@@ -45,10 +45,14 @@
     [(View*)self.view setLevelPoints:levelPoints];
     
     NSArray *playerPoints = [NSArray arrayWithObjects:
-                             [NSValue valueWithCGPoint:CGPointMake(-10.0,  -10.0)]
+                             [NSValue valueWithCGPoint:CGPointMake(-30.0,  -30.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(-10.0,  -30.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(-10.0,  -10.0)]
                              , [NSValue valueWithCGPoint:CGPointMake(10.0,  -10.0)]
-                             , [NSValue valueWithCGPoint:CGPointMake(10.0,  10.0)]
-                             , [NSValue valueWithCGPoint:CGPointMake(-10.0,  10.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(10.0,  -30.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(30.0,  -30.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(30.0,  10.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(-30.0,  10.0)]
                              , nil];
     [(View*)self.view setPlayerPoints:playerPoints];
     
@@ -131,54 +135,85 @@
 
 - (void) checkInOutPlayer
 {
-    BOOL outside = NO;
-    
     NSArray *levelPoints = [(View*)self.view levelPoints];
     NSArray *playerPoints = [(View*)self.view playerPoints];
+    
     if (levelPoints && [levelPoints count] > 1 && playerPoints && [playerPoints count] > 0)
     {
         CGPoint tapPoint = [(View*)self.view tapPoint];
-        
         NSMutableArray *intersectingPoints = [NSMutableArray arrayWithCapacity:[levelPoints count]];
-        for (NSValue *val in playerPoints)
+        
+        BOOL foundIntersection = NO;
+        for (NSInteger playerIndex = 1; playerIndex < [playerPoints count] + 1; ++playerIndex)
         {
-            CGPoint playerPoint = CGPointMake(tapPoint.x + [val CGPointValue].x, tapPoint.y + [val CGPointValue].y);
+            NSInteger indexA = playerIndex-1;
+            NSInteger indexB = playerIndex == [playerPoints count] ? 0 : playerIndex;
             
-            CGPoint point1a = CGPointMake(0.0, playerPoint.y);
-            CGPoint point1b = playerPoint;
+            NSValue *valPlayer_a = [playerPoints objectAtIndex:indexA];
+            CGPoint pointPlayer_a = CGPointMake(tapPoint.x + [valPlayer_a CGPointValue].x, tapPoint.y + [valPlayer_a CGPointValue].y);
+            NSValue *valPlayer_b = [playerPoints objectAtIndex:indexB];
+            CGPoint pointPlayer_b = CGPointMake(tapPoint.x + [valPlayer_b CGPointValue].x, tapPoint.y + [valPlayer_b CGPointValue].y);
             
-            NSInteger intersectionsCount = 0;
-            for (NSInteger i = 1; i < [levelPoints count] + 1; ++i)
+            for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
             {
-                NSInteger indexA = i-1;
-                NSInteger indexB = i == [levelPoints count] ? 0 : i;
+                NSInteger indexA = levelIndex-1;
+                NSInteger indexB = levelIndex == [levelPoints count] ? 0 : levelIndex;
                 
                 NSValue *val2a = [levelPoints objectAtIndex:indexA];
                 CGPoint point2a = [val2a CGPointValue];
                 NSValue *val2b = [levelPoints objectAtIndex:indexB];
                 CGPoint point2b = [val2b CGPointValue];
                 
-                if ([self intersectionsPoint1a:point1a point1b:point1b point2a:point2a point2b:point2b intersectingPoints:intersectingPoints])
+                if ([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b intersectingPoints:intersectingPoints])
+                {
+                    foundIntersection = YES;
+                    break;
+                }
+            }
+            
+            if (foundIntersection)
+            {
+                break;
+            }
+        }
+        
+        
+        NSInteger intersectionsCount = 0;
+        if (!foundIntersection)
+        {
+            NSValue *valPlayer0 = [playerPoints objectAtIndex:0];
+            CGPoint playerPoint = CGPointMake(tapPoint.x + [valPlayer0 CGPointValue].x, tapPoint.y + [valPlayer0 CGPointValue].y);
+            
+            CGPoint pointPlayer_a = CGPointMake(0.0, playerPoint.y);
+            CGPoint pointPlayer_b = playerPoint;
+            
+            
+            for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
+            {
+                NSInteger indexA = levelIndex-1;
+                NSInteger indexB = levelIndex == [levelPoints count] ? 0 : levelIndex;
+                
+                NSValue *val2a = [levelPoints objectAtIndex:indexA];
+                CGPoint point2a = [val2a CGPointValue];
+                NSValue *val2b = [levelPoints objectAtIndex:indexB];
+                CGPoint point2b = [val2b CGPointValue];
+                
+                if ([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b intersectingPoints:intersectingPoints])
                 {
                     intersectionsCount++;
                 }
             }
-        
-            if (!outside && intersectionsCount %2 == 0)
-            {
-                outside = YES;
-            }
         }
-
+        
         [(View*)self.view setIntersectingPoints:intersectingPoints];
         
-        if (outside)
+        if (foundIntersection || intersectionsCount %2 == 0)
         {
-            [self.resultLabel setText:[NSString stringWithFormat:@"outside"]];
+            [self.resultLabel setText:[NSString stringWithFormat:@"outside, foundIntersection: %d, intersectionsCount: %d", foundIntersection, intersectionsCount]];
         }
         else
         {
-            [self.resultLabel setText:[NSString stringWithFormat:@"inside"]];
+            [self.resultLabel setText:[NSString stringWithFormat:@"inside, foundIntersection: %d, intersectionsCount: %d", foundIntersection, intersectionsCount]];
         }
     }
 }
