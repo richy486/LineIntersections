@@ -30,17 +30,30 @@
     [self setView:[[View alloc] init]];
     
     CGFloat offset = 100.0;
+    CGFloat mult = 5.0;
     
-    NSArray *points = [NSArray arrayWithObjects:
-                       [NSValue valueWithCGPoint:CGPointMake(250 + offset, 0 + offset)]
-                       , [NSValue valueWithCGPoint:CGPointMake(500 + offset, 250 + offset)]
-                       , [NSValue valueWithCGPoint:CGPointMake(250 + offset, 500 + offset)]
-                       , [NSValue valueWithCGPoint:CGPointMake(0 + offset, 250 + offset)]
+    NSArray *levelPoints = [NSArray arrayWithObjects:
+                            [NSValue valueWithCGPoint:CGPointMake(25.0 * mult + offset,  0.0 * mult + offset)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + offset, 25.0 * mult + offset)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(37.5 * mult + offset, 37.5 * mult + offset)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + offset, 50.0 * mult + offset)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(100.0 * mult + offset, 0.0 * mult + offset)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(112.5 * mult + offset, 12.5 * mult + offset)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + offset, 75.0 * mult + offset)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake( 0.0 * mult + offset, 25.0 * mult + offset)]
                        , nil];
-    [(View*)self.view setPoints:points];
+    [(View*)self.view setLevelPoints:levelPoints];
+    
+    NSArray *playerPoints = [NSArray arrayWithObjects:
+                             [NSValue valueWithCGPoint:CGPointMake(-10.0,  -10.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(10.0,  -10.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(10.0,  10.0)]
+                             , [NSValue valueWithCGPoint:CGPointMake(-10.0,  10.0)]
+                             , nil];
+    [(View*)self.view setPlayerPoints:playerPoints];
     
     self.resultLabel = [[UILabel alloc] init];
-    [self.resultLabel setFrame:CGRectMake(20, 600, 500, 100)];
+    [self.resultLabel setFrame:CGRectMake(20, 900, 500, 100)];
     [self.resultLabel setText:@"###"];
     [self.view addSubview:self.resultLabel];
 }
@@ -54,7 +67,7 @@
     [(View*)self.view setTapPoint:location];
     
     [self.view setNeedsDisplay];
-    [self checkInOut];
+    [self checkInOutPlayer];
 }
 - (void) touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
@@ -63,16 +76,15 @@
     [(View*)self.view setTapPoint:location];
     
     [self.view setNeedsDisplay];
-    [self checkInOut];
+    [self checkInOutPlayer];
 }
 
 #pragma mark - calculations
 // these should go into some other class
 
-- (void) checkInOut
+- (void) checkInOutTapPoint
 {
-    //for (NSValue *val in [(View*)self.view points])
-    NSArray *points = [(View*)self.view points];
+    NSArray *points = [(View*)self.view levelPoints];
     if (points && [points count] > 1)
     {
         CGPoint tapPoint = [(View*)self.view tapPoint];
@@ -113,6 +125,60 @@
         else
         {
             [self.resultLabel setText:[NSString stringWithFormat:@"inside, count: %d", intersectionsCount]];
+        }
+    }
+}
+
+- (void) checkInOutPlayer
+{
+    BOOL outside = NO;
+    
+    NSArray *levelPoints = [(View*)self.view levelPoints];
+    NSArray *playerPoints = [(View*)self.view playerPoints];
+    if (levelPoints && [levelPoints count] > 1 && playerPoints && [playerPoints count] > 0)
+    {
+        CGPoint tapPoint = [(View*)self.view tapPoint];
+        
+        NSMutableArray *intersectingPoints = [NSMutableArray arrayWithCapacity:[levelPoints count]];
+        for (NSValue *val in playerPoints)
+        {
+            CGPoint playerPoint = CGPointMake(tapPoint.x + [val CGPointValue].x, tapPoint.y + [val CGPointValue].y);
+            
+            CGPoint point1a = CGPointMake(0.0, playerPoint.y);
+            CGPoint point1b = playerPoint;
+            
+            NSInteger intersectionsCount = 0;
+            for (NSInteger i = 1; i < [levelPoints count] + 1; ++i)
+            {
+                NSInteger indexA = i-1;
+                NSInteger indexB = i == [levelPoints count] ? 0 : i;
+                
+                NSValue *val2a = [levelPoints objectAtIndex:indexA];
+                CGPoint point2a = [val2a CGPointValue];
+                NSValue *val2b = [levelPoints objectAtIndex:indexB];
+                CGPoint point2b = [val2b CGPointValue];
+                
+                if ([self intersectionsPoint1a:point1a point1b:point1b point2a:point2a point2b:point2b intersectingPoints:intersectingPoints])
+                {
+                    intersectionsCount++;
+                }
+            }
+        
+            if (!outside && intersectionsCount %2 == 0)
+            {
+                outside = YES;
+            }
+        }
+
+        [(View*)self.view setIntersectingPoints:intersectingPoints];
+        
+        if (outside)
+        {
+            [self.resultLabel setText:[NSString stringWithFormat:@"outside"]];
+        }
+        else
+        {
+            [self.resultLabel setText:[NSString stringWithFormat:@"inside"]];
         }
     }
 }

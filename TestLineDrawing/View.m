@@ -32,7 +32,7 @@
 
 - (void) drawPath
 {
-    if (self.points && [self.points count] > 0)
+    if (self.levelPoints && [self.levelPoints count] > 0)
     {
 //        CGContextRef c = UIGraphicsGetCurrentContext();
 //        
@@ -79,20 +79,17 @@
         CGFloat colourRed[4] = {1.0f, 0.0f, 0.0f, 1.0f};
         CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
         
-        for (NSInteger i = 1; i < [self.points count] + 1; ++i)
+        for (NSInteger i = 1; i < [self.levelPoints count] + 1; ++i)
         {
             NSInteger indexA = i-1;
-            NSInteger indexB = i == [self.points count] ? 0 : i;
+            NSInteger indexB = i == [self.levelPoints count] ? 0 : i;
             
-            NSValue *val2a = [self.points objectAtIndex:indexA];
+            NSValue *val2a = [self.levelPoints objectAtIndex:indexA];
             CGPoint point2a = [val2a CGPointValue];
-            NSValue *val2b = [self.points objectAtIndex:indexB];
+            NSValue *val2b = [self.levelPoints objectAtIndex:indexB];
             CGPoint point2b = [val2b CGPointValue];
             
             CGContextRef c = UIGraphicsGetCurrentContext();
-            
-            
-            
             if (self.linesIntersecting && i - 1 < [self.linesIntersecting count]
                 && [[self.linesIntersecting objectAtIndex:i - 1] boolValue] == YES)
             {
@@ -113,6 +110,36 @@
 
 - (void) drawTapPoint
 {
+    if (self.playerPoints)
+    {
+        CGContextRef c = UIGraphicsGetCurrentContext();
+
+        CGFloat colourBlack[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+        CGContextSetStrokeColor(c, colourBlack);
+        CGContextBeginPath(c);
+
+        NSInteger i = 0;
+        CGPoint firstPoint;
+        for (NSValue *val in self.playerPoints)
+        {
+            CGPoint point = [val CGPointValue];
+            if (i == 0)
+            {
+                CGContextMoveToPoint(c, point.x + self.tapPoint.x, point.y + self.tapPoint.y);
+                firstPoint = point;
+            }
+            else
+            {
+                CGContextAddLineToPoint(c, point.x + self.tapPoint.x, point.y + self.tapPoint.y);
+            }
+            
+            ++i;
+        }
+        CGContextAddLineToPoint(c, firstPoint.x + self.tapPoint.x, firstPoint.y + self.tapPoint.y);
+
+        CGContextStrokePath(c);
+    }
+    
     CGContextRef c = UIGraphicsGetCurrentContext();
     CGFloat colour[4] = {0.0f, 0.0f, 1.0f, 1.0f};
     CGContextSetStrokeColor(c, colour);
