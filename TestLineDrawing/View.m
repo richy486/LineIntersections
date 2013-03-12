@@ -7,6 +7,7 @@
 //
 
 #import "View.h"
+#import "Intersection.h"
 
 @interface View()
 {
@@ -37,6 +38,7 @@
     [self drawPath];
     [self drawTapPoint];
     [self drawIntersectingPoints];
+    [self drawIntersectingLines];
 }
 
 - (void) drawPath
@@ -57,12 +59,12 @@
             CGPoint point2b = [val2b CGPointValue];
             
             CGContextRef c = UIGraphicsGetCurrentContext();
-            if (self.linesIntersecting && i - 1 < [self.linesIntersecting count]
-                && [[self.linesIntersecting objectAtIndex:i - 1] boolValue] == YES)
-            {
-                CGContextSetStrokeColor(c, colourRed);
-            }
-            else
+//            if (self.linesIntersecting && i - 1 < [self.linesIntersecting count]
+//                && [[self.linesIntersecting objectAtIndex:i - 1] boolValue] == YES)
+//            {
+//                CGContextSetStrokeColor(c, colourRed);
+//            }
+//            else
             {
                 CGContextSetStrokeColor(c, colourGeen);
             }
@@ -131,15 +133,42 @@
 {
     if (self.intersectingPoints)
     {
-        for (NSValue *val in self.intersectingPoints)
+        for (Intersection *intersection in self.intersectingPoints)
         {
-            CGPoint point = [val CGPointValue];
+            CGPoint point = CGPointMake(intersection.intersectionX, intersection.intersectionY);
             
             CGContextRef c = UIGraphicsGetCurrentContext();
             CGFloat colour[4] = {1.0f, 0.0f, 0.0f, 1.0f};
             CGContextSetStrokeColor(c, colour);
             CGContextAddEllipseInRect(c, CGRectMake(point.x - 2, point.y - 2, 4, 4));
             CGContextStrokePath(c);
+        }
+    }
+}
+
+- (void) drawIntersectingLines
+{
+    if (self.intersectingLines && [self.intersectingLines count] > 0)
+    {
+        CGFloat colourRed[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+        CGFloat colourOrange[4] = {1.0f, 1.0f, 0.0f, 1.0f};
+        
+        for (Intersection *intersection in self.intersectingLines)
+        {
+            {
+                CGContextRef c = UIGraphicsGetCurrentContext();
+                CGContextSetStrokeColor(c, colourRed);
+                CGContextMoveToPoint(c, intersection.linePoint2a.x, intersection.linePoint2a.y);
+                CGContextAddLineToPoint(c, intersection.linePoint2b.x, intersection.linePoint2b.y);
+                CGContextStrokePath(c);
+            }
+            
+            {
+                CGContextRef c = UIGraphicsGetCurrentContext();
+                CGContextSetStrokeColor(c, colourOrange);
+                CGContextAddEllipseInRect(c, CGRectMake(intersection.intersectionX - 4, intersection.intersectionY - 4, 8, 8));
+                CGContextStrokePath(c);
+            }
         }
     }
 }

@@ -15,6 +15,7 @@
 
 @property (nonatomic, strong) NSArray *linesIntersecting;
 @property (nonatomic, strong) NSArray *intersectingPoints;
+@property (nonatomic, strong) NSMutableArray *intersectingLines;
 
 - (float) rotation;
 - (void) setRotation:(float)val;

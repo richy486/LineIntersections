@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "View.h"
+#import "Intersection.h"
 
 @interface ViewController ()
 {
@@ -143,6 +144,7 @@ const double toll = 0.4;
     {
         CGPoint tapPoint = [(View*)self.view tapPoint];
         NSMutableArray *intersectingPoints = [NSMutableArray arrayWithCapacity:[levelPoints count]];
+        NSMutableArray *intersectingLines = [NSMutableArray arrayWithCapacity:[levelPoints count]];
         
         BOOL foundIntersection = NO;
         for (NSInteger playerIndex = 1; playerIndex < [playerPoints count] + 1; ++playerIndex)
@@ -169,24 +171,8 @@ const double toll = 0.4;
                 double y = 0.0;
                 if ([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b intersectingPointX:&x intersectingPointY:&y])
                 {
-                    
-                    BOOL found = NO;
-//                    for (NSValue *val in intersectingPoints)
-//                    {
-//                        CGPoint addedPoint = [val CGPointValue];
-//                        if (addedPoint.x >= x - toll && addedPoint.x <= x + toll
-//                            && addedPoint.y >= y - toll && addedPoint.y <= y + toll)
-//                        {
-//                            found = YES;
-//                            break;
-//                        }
-//                    }
-//
-                    if (!found)
-                    {
-                        [intersectingPoints addObject:[NSValue valueWithCGPoint:CGPointMake(x, y)]];
-                        NSLog(@"intersection: %.02f, %.02f", x, y);
-                    }
+                    [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
+//                    NSLog(@"intersection: %.02f, %.02f", x, y);
                     
                     foundIntersection = YES;
                     break;
@@ -209,7 +195,7 @@ const double toll = 0.4;
             CGPoint pointPlayer_a = CGPointMake(0.0, playerPoint.y);
             CGPoint pointPlayer_b = playerPoint;
             
-            NSLog(@" ------ pp 0 start: ");
+//            NSLog(@" ------ pp 0 start: ");
             for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
             {
                 NSInteger indexA = levelIndex-1;
@@ -225,29 +211,66 @@ const double toll = 0.4;
                 if ([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b  intersectingPointX:&x intersectingPointY:&y])
                 {
                     BOOL found = NO;
-                    //                    for (NSValue *val in intersectingPoints)
-                    //                    {
-                    //                        CGPoint addedPoint = [val CGPointValue];
-                    //                        if (addedPoint.x >= x - toll && addedPoint.x <= x + toll
-                    //                            && addedPoint.y >= y - toll && addedPoint.y <= y + toll)
-                    //                        {
-                    //                            found = YES;
-                    //                            break;
-                    //                        }
-                    //                    }
-                    //
+                    for (Intersection *intersection in intersectingPoints)
+                    {
+//                        NSLog(@"intersection: %.02f, %.02f ||| last intersection: %.02f, %.02f", x, y, intersection.intersectionX, intersection.intersectionY);
+                        if (intersection.intersectionX >= x - toll*2 && intersection.intersectionX <= x + toll*2
+                            && intersection.intersectionY >= y - toll*2 && intersection.intersectionY <= y + toll*2)
+                        {
+                            CGPoint playerFullLength_a = CGPointMake(0.0, playerPoint.y);
+                            CGPoint playerFullLength_b = CGPointMake(self.view.frame.size.width, playerPoint.y);
+                            
+                            if (intersection.linePoint2a.x == point2b.x && intersection.linePoint2a.y == point2b.y)
+                            {
+                                double xA = 0.0;
+                                double yA = 0.0;
+                                if ([self intersectionsPoint1a:playerFullLength_a point1b:playerFullLength_b
+                                                       point2a:intersection.linePoint2b point2b:point2a
+                                            intersectingPointX:&xA intersectingPointY:&yA])
+                                {
+                                    found = YES;
+                                }
+                                
+                                [intersectingLines addObject:[Intersection intersectionWithX:xA Y:yA
+                                                                                     point1a:playerFullLength_a point1b:playerFullLength_b
+                                                                                     point2a:intersection.linePoint2b point2b:point2a]];
+
+                            }
+                            else if (intersection.linePoint2b.x == point2a.x && intersection.linePoint2b.y == point2a.y)
+                            {
+                                double xA = 0.0;
+                                double yA = 0.0;
+                                if ([self intersectionsPoint1a:playerFullLength_a point1b:playerFullLength_b
+                                                       point2a:intersection.linePoint2a point2b:point2b
+                                            intersectingPointX:&xA intersectingPointY:&yA])
+                                {
+                                    found = YES;
+                                }
+                                [intersectingLines addObject:[Intersection intersectionWithX:xA Y:yA
+                                                                                     point1a:playerFullLength_a point1b:playerFullLength_b
+                                                                                     point2a:intersection.linePoint2a point2b:point2b]];
+                            }
+                            
+                            if (found)
+                            {
+                                break;
+                            }
+                        }
+                    }
+
                     if (!found)
                     {
-                        [intersectingPoints addObject:[NSValue valueWithCGPoint:CGPointMake(x, y)]];
-                        NSLog(@"intersection: %.02f, %.02f", x, y);
+                        [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
+//                        NSLog(@"intersection: %.02f, %.02f", x, y);
+                        intersectionsCount++;
                     }
-                    intersectionsCount++;
                 }
             }
-            NSLog(@" ------ pp 0 end ");
+//            NSLog(@" ------ pp 0 end ");
         }
         
         [(View*)self.view setIntersectingPoints:intersectingPoints];
+        [(View*)self.view setIntersectingLines:intersectingLines];
         
         if (foundIntersection || intersectionsCount %2 == 0)
         {
@@ -286,7 +309,7 @@ const double toll = 0.4;
     
     double x, y;
     if(det == 0){
-        return YES;
+        return NO;
     }else{
         x = (B2*C1 - B1*C2)/det;
         y = (A1*C2 - A2*C1)/det;

@@ -23,6 +23,7 @@
 		CAD704FF16E96CCD005DA45E /* TestLineDrawingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CAD704FE16E96CCD005DA45E /* TestLineDrawingTests.m */; };
 		CAD7050A16E96D08005DA45E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CAD7050916E96D08005DA45E /* ViewController.m */; };
 		CAD7050D16E96F0D005DA45E /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = CAD7050C16E96F0D005DA45E /* View.m */; };
+		CADBC92016EEC1660090F81A /* Intersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CADBC91F16EEC1660090F81A /* Intersection.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +60,8 @@
 		CAD7050916E96D08005DA45E /* ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		CAD7050B16E96F0D005DA45E /* View.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = View.h; sourceTree = "<group>"; };
 		CAD7050C16E96F0D005DA45E /* View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = "<group>"; };
+		CADBC91E16EEC1660090F81A /* Intersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Intersection.h; sourceTree = "<group>"; };
+		CADBC91F16EEC1660090F81A /* Intersection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Intersection.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +128,8 @@
 				CAD7050916E96D08005DA45E /* ViewController.m */,
 				CAD7050B16E96F0D005DA45E /* View.h */,
 				CAD7050C16E96F0D005DA45E /* View.m */,
+				CADBC91E16EEC1660090F81A /* Intersection.h */,
+				CADBC91F16EEC1660090F81A /* Intersection.m */,
 			);
 			path = TestLineDrawing;
 			sourceTree = "<group>";
@@ -275,6 +280,7 @@
 				CAD704E416E96CCC005DA45E /* AppDelegate.m in Sources */,
 				CAD7050A16E96D08005DA45E /* ViewController.m in Sources */,
 				CAD7050D16E96F0D005DA45E /* View.m in Sources */,
+				CADBC92016EEC1660090F81A /* Intersection.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
