@@ -8,6 +8,12 @@
 
 #import "View.h"
 
+@interface View()
+{
+    float _rotation;
+}
+@end
+
 @implementation View
 
 - (id)initWithFrame:(CGRect)frame
@@ -15,6 +21,7 @@
     self = [super initWithFrame:frame];
     if (self) {
         
+        _rotation = 0.0;
         [self setBackgroundColor:[UIColor lightGrayColor]];
         self.tapPoint = CGPointMake(100.0, 100.0);
     }
@@ -23,7 +30,9 @@
 
 // Only override drawRect: if you perform custom drawing.
 // An empty implementation adversely affects performance during animation.
-- (void)drawRect:(CGRect)rect {
+- (void)drawRect:(CGRect)rect
+{
+    
     
     [self drawPath];
     [self drawTapPoint];
@@ -34,48 +43,6 @@
 {
     if (self.levelPoints && [self.levelPoints count] > 0)
     {
-//        CGContextRef c = UIGraphicsGetCurrentContext();
-//        
-//        CGFloat colourBlack[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-//        CGFloat colourRed[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-//        CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
-//        CGContextSetStrokeColor(c, colourBlack);
-//        CGContextBeginPath(c);
-//        
-//        NSInteger i = 0;
-//        CGPoint firstPoint;
-//        for (NSValue *val in self.points)
-//        {
-//            if (i == 3)
-//            {
-//                CGContextSetStrokeColor(c, colourRed);
-//            }
-//            else
-//            {
-//                CGContextSetStrokeColor(c, colourGeen);
-//            }
-//            
-//            CGPoint point = [val CGPointValue];
-//            
-//            
-//            
-//            if (i == 0)
-//            {
-//                CGContextMoveToPoint(c, point.x, point.y);
-//                firstPoint = point;
-//            }
-//            else
-//            {
-//                CGContextAddLineToPoint(c, point.x, point.y);
-//            }
-//            
-//            ++i;
-//        }
-//        CGContextAddLineToPoint(c, firstPoint.x, firstPoint.y);
-//        
-//        CGContextStrokePath(c);
-        
-        
         CGFloat colourRed[4] = {1.0f, 0.0f, 0.0f, 1.0f};
         CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
         
@@ -140,17 +107,23 @@
         CGContextStrokePath(c);
     }
     
-    CGContextRef c = UIGraphicsGetCurrentContext();
-    CGFloat colour[4] = {0.0f, 0.0f, 1.0f, 1.0f};
-    CGContextSetStrokeColor(c, colour);
-    CGContextAddEllipseInRect(c, CGRectMake(self.tapPoint.x - 2, self.tapPoint.y - 2, 4, 4));
-    CGContextStrokePath(c);
-    
-    CGContextSetStrokeColor(c, colour);
-    CGContextBeginPath(c);
-    CGContextMoveToPoint(c, 0, self.tapPoint.y);
-    CGContextAddLineToPoint(c, self.tapPoint.x, self.tapPoint.y);
-    CGContextStrokePath(c);
+    if (self.playerPoints && [self.playerPoints count] > 0)
+    {
+        NSValue *valPlayer0 = [self.playerPoints objectAtIndex:0];
+        CGPoint playerPoint = CGPointMake(self.tapPoint.x + [valPlayer0 CGPointValue].x, self.tapPoint.y + [valPlayer0 CGPointValue].y);
+        
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGFloat colour[4] = {0.0f, 0.0f, 1.0f, 1.0f};
+        CGContextSetStrokeColor(c, colour);
+        CGContextAddEllipseInRect(c, CGRectMake(playerPoint.x - 2, playerPoint.y - 2, 4, 4));
+        CGContextStrokePath(c);
+        
+        CGContextSetStrokeColor(c, colour);
+        CGContextBeginPath(c);
+        CGContextMoveToPoint(c, 0, playerPoint.y);
+        CGContextAddLineToPoint(c, playerPoint.x, playerPoint.y);
+        CGContextStrokePath(c);
+    }
 }
 
 
@@ -170,4 +143,28 @@
         }
     }
 }
+
+#pragma mark - getters setters
+
+- (float) rotation
+{
+    return _rotation;
+}
+- (void) setRotation:(float)val
+{
+    _rotation = val;
+    
+    CGAffineTransform transformRot = CGAffineTransformMakeRotation(_rotation);
+    
+    for (NSInteger i = 0; i < [self.playerPoints count]; ++i)
+    {
+        NSValue *val = [self.playerPoints objectAtIndex:i];
+        CGPoint point = [val CGPointValue];
+        CGPoint pointRot = CGPointApplyAffineTransform(point, transformRot);
+        
+        [self.playerPoints replaceObjectAtIndex:i withObject:[NSValue valueWithCGPoint:pointRot]];
+    }
+}
+
+
 @end

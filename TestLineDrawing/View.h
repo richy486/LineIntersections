@@ -10,9 +10,12 @@
 
 @interface View : UIView
 @property (nonatomic, strong) NSArray *levelPoints;
-@property (nonatomic, strong) NSArray *playerPoints;
+@property (nonatomic, strong) NSMutableArray *playerPoints;
 @property (nonatomic) CGPoint tapPoint;
 
 @property (nonatomic, strong) NSArray *linesIntersecting;
 @property (nonatomic, strong) NSArray *intersectingPoints;
+
+- (float) rotation;
+- (void) setRotation:(float)val;
 @end
