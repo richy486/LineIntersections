@@ -10,6 +10,7 @@
 #import "View.h"
 #import "Intersection.h"
 #import "Line.h"
+#import "ArcLine.h"
 #import "Level.h"
 
 @interface ViewController ()
@@ -57,6 +58,7 @@ const double toll = 0.4;
     NSMutableArray *levelLines = [NSMutableArray arrayWithCapacity:[levelPoints count]];
     for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
     {
+        
         NSInteger indexA = levelIndex-1;
         NSInteger indexB = levelIndex == [levelPoints count] ? 0 : levelIndex;
         
@@ -65,7 +67,16 @@ const double toll = 0.4;
         NSValue *valB = [levelPoints objectAtIndex:indexB];
         CGPoint pointB = [valB CGPointValue];
         
-        [levelLines addObject:[Line lineWithPointA:pointA pointB:pointB]];
+        if (levelIndex == 1)
+        {
+            double chord = sqrt(pow((pointB.x - pointA.x), 2.0) + pow((pointB.y - pointA.y), 2.0));
+            [levelLines addObject:[ArcLine lineWithPointA:pointA pointB:pointB radius:89.0 chord: chord angle:(3.0 * M_PI)/4]];
+        }
+        else
+        {
+            
+            [levelLines addObject:[Line lineWithPointA:pointA pointB:pointB]];
+        }
     }
     [[Level sharedInstance] setLevelLines:levelLines];
     

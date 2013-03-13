@@ -25,7 +25,7 @@
     if (self) {
         
         _rotation = 0.0;
-        [self setBackgroundColor:[UIColor lightGrayColor]];
+        [self setBackgroundColor:[UIColor blackColor]];
     }
     return self;
 }
@@ -46,18 +46,9 @@
 {
     if ([[Level sharedInstance] levelLines] && [[[Level sharedInstance] levelLines] count] > 0)
     {
-        CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
-        
         for (Line *line in [[Level sharedInstance] levelLines])
         {
-            CGContextRef c = UIGraphicsGetCurrentContext();
-            CGContextSetStrokeColor(c, colourGeen);
-            
-            
-            CGContextMoveToPoint(c, line.pointA.x, line.pointA.y);
-            CGContextAddLineToPoint(c, line.pointB.x, line.pointB.y);
-            
-            CGContextStrokePath(c);
+            [line draw];
         }
     }
 }
@@ -68,7 +59,7 @@
     {
         CGContextRef c = UIGraphicsGetCurrentContext();
 
-        CGFloat colourBlack[4] = {0.0f, 0.0f, 0.0f, 1.0f};
+        CGFloat colourBlack[4] = {1.0f, 1.0f, 1.0f, 1.0f};
         CGContextSetStrokeColor(c, colourBlack);
         CGContextBeginPath(c);
 

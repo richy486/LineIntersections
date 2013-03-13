@@ -21,6 +21,14 @@
 
 - (void) draw
 {
+    CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
     
+    CGContextRef c = UIGraphicsGetCurrentContext();
+    CGContextSetStrokeColor(c, colourGeen);
+    
+    CGContextMoveToPoint(c, self.pointA.x, self.pointA.y);
+    CGContextAddLineToPoint(c, self.pointB.x, self.pointB.y);
+    
+    CGContextStrokePath(c);
 }
 @end
