@@ -10,6 +10,7 @@
 #import "View.h"
 #import "Intersection.h"
 #import "Line.h"
+#import "Level.h"
 
 @interface ViewController ()
 {
@@ -66,7 +67,7 @@ const double toll = 0.4;
         
         [levelLines addObject:[Line lineWithPointA:pointA pointB:pointB]];
     }
-    [(View*)self.view setLevelLines:levelLines];
+    [[Level sharedInstance] setLevelLines:levelLines];
     
     NSMutableArray *playerPoints = [NSMutableArray arrayWithObjects:
                              [NSValue valueWithCGPoint:CGPointMake(-30.0,  -30.0)]
@@ -78,7 +79,7 @@ const double toll = 0.4;
                              , [NSValue valueWithCGPoint:CGPointMake(30.0,  10.0)]
                              , [NSValue valueWithCGPoint:CGPointMake(-30.0,  10.0)]
                              , nil];
-    [(View*)self.view setPlayerPoints:playerPoints];
+    [[Level sharedInstance] setPlayerPoints:playerPoints];
     
     self.resultLabel = [[UILabel alloc] init];
     [self.resultLabel setFrame:CGRectMake(20, 900, 700, 100)];
@@ -123,8 +124,8 @@ const double toll = 0.4;
 {
     CGPoint newCenter = [gestureRecognizer translationInView:self.view];
     if([gestureRecognizer state] == UIGestureRecognizerStateBegan) {
-        _beginPan.x = [(View*)self.view tapPoint].x;
-        _beginPan.y = [(View*)self.view tapPoint].y;
+        _beginPan.x = [[Level sharedInstance] playerPosition].x;
+        _beginPan.y = [[Level sharedInstance] playerPosition].y;
         
         
         
@@ -132,7 +133,7 @@ const double toll = 0.4;
     newCenter = CGPointMake(_beginPan.x + newCenter.x, _beginPan.y + newCenter.y);
     
     
-    [(View*)self.view setTapPoint:newCenter];
+    [[Level sharedInstance] setPlayerPosition:newCenter];
     
     [self.view setNeedsDisplay];
     [self checkInOutPlayer];
@@ -148,12 +149,12 @@ const double toll = 0.4;
 
 - (void) checkInOutPlayer
 {
-    NSMutableArray *levelLines = [(View*)self.view levelLines];
-    NSArray *playerPoints = [(View*)self.view playerPoints];
+    NSMutableArray *levelLines = [[Level sharedInstance] levelLines];
+    NSArray *playerPoints = [[Level sharedInstance] playerPoints];
     
     if (levelLines && [levelLines count] > 1 && playerPoints && [playerPoints count] > 0)
     {
-        CGPoint tapPoint = [(View*)self.view tapPoint];
+        CGPoint playerPosition = [[Level sharedInstance] playerPosition];
         NSMutableArray *intersectingPoints = [NSMutableArray arrayWithCapacity:[levelLines count]];
         NSMutableArray *intersectingLines = [NSMutableArray arrayWithCapacity:[levelLines count]];
         
@@ -164,9 +165,9 @@ const double toll = 0.4;
             NSInteger indexB = playerIndex == [playerPoints count] ? 0 : playerIndex;
             
             NSValue *valPlayer_a = [playerPoints objectAtIndex:indexA];
-            CGPoint pointPlayer_a = CGPointMake(tapPoint.x + [valPlayer_a CGPointValue].x, tapPoint.y + [valPlayer_a CGPointValue].y);
+            CGPoint pointPlayer_a = CGPointMake(playerPosition.x + [valPlayer_a CGPointValue].x, playerPosition.y + [valPlayer_a CGPointValue].y);
             NSValue *valPlayer_b = [playerPoints objectAtIndex:indexB];
-            CGPoint pointPlayer_b = CGPointMake(tapPoint.x + [valPlayer_b CGPointValue].x, tapPoint.y + [valPlayer_b CGPointValue].y);
+            CGPoint pointPlayer_b = CGPointMake(playerPosition.x + [valPlayer_b CGPointValue].x, playerPosition.y + [valPlayer_b CGPointValue].y);
             
             for (Line *line in levelLines)
             {
@@ -195,7 +196,7 @@ const double toll = 0.4;
         if (!foundIntersection)
         {
             NSValue *valPlayer0 = [playerPoints objectAtIndex:0];
-            CGPoint playerPoint = CGPointMake(tapPoint.x + [valPlayer0 CGPointValue].x, tapPoint.y + [valPlayer0 CGPointValue].y);
+            CGPoint playerPoint = CGPointMake(playerPosition.x + [valPlayer0 CGPointValue].x, playerPosition.y + [valPlayer0 CGPointValue].y);
             
             CGPoint pointPlayer_a = CGPointMake(0.0, playerPoint.y);
             CGPoint pointPlayer_b = playerPoint;
@@ -271,7 +272,7 @@ const double toll = 0.4;
         if (foundIntersection || intersectionsCount %2 == 0)
         {
             NSValue *valPlayer0 = [playerPoints objectAtIndex:0];
-            CGPoint playerPoint = CGPointMake(tapPoint.x + [valPlayer0 CGPointValue].x, tapPoint.y + [valPlayer0 CGPointValue].y);
+            CGPoint playerPoint = CGPointMake(playerPosition.x + [valPlayer0 CGPointValue].x, playerPosition.y + [valPlayer0 CGPointValue].y);
             
             [self.resultLabel setText:[NSString stringWithFormat:@"outside\nfoundIntersection: %d, intersectionsCount: %d\npp %.02f, %.02f", foundIntersection, intersectionsCount, playerPoint.x, playerPoint.y]];
             [self.resultLabel setBackgroundColor:[UIColor colorWithRed:1.0 green:0.8 blue:0.8 alpha:1.0]];
@@ -279,7 +280,7 @@ const double toll = 0.4;
         else
         {
             NSValue *valPlayer0 = [playerPoints objectAtIndex:0];
-            CGPoint playerPoint = CGPointMake(tapPoint.x + [valPlayer0 CGPointValue].x, tapPoint.y + [valPlayer0 CGPointValue].y);
+            CGPoint playerPoint = CGPointMake(playerPosition.x + [valPlayer0 CGPointValue].x, playerPosition.y + [valPlayer0 CGPointValue].y);
             
             [self.resultLabel setText:[NSString stringWithFormat:@"inside\nfoundIntersection: %d, intersectionsCount: %d\npp %.02f, %.02f", foundIntersection, intersectionsCount, playerPoint.x, playerPoint.y]];
             [self.resultLabel setBackgroundColor:[UIColor colorWithRed:0.8 green:1.0 blue:0.8 alpha:1.0]];

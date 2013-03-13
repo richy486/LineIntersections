@@ -13,4 +13,5 @@
 @property (nonatomic) CGPoint pointB;
 
 + (id) lineWithPointA:(CGPoint) pointA pointB:(CGPoint) pointB;
+- (void) draw;
 @end

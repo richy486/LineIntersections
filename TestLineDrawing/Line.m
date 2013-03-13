@@ -18,4 +18,9 @@
     
     return line;
 }
+
+- (void) draw
+{
+    
+}
 @end

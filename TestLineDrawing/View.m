@@ -9,6 +9,7 @@
 #import "View.h"
 #import "Intersection.h"
 #import "Line.h"
+#import "Level.h"
 
 @interface View()
 {
@@ -25,7 +26,6 @@
         
         _rotation = 0.0;
         [self setBackgroundColor:[UIColor lightGrayColor]];
-        self.tapPoint = CGPointMake(100.0, 100.0);
     }
     return self;
 }
@@ -44,11 +44,11 @@
 
 - (void) drawPath
 {
-    if (self.levelLines && [self.levelLines count] > 0)
+    if ([[Level sharedInstance] levelLines] && [[[Level sharedInstance] levelLines] count] > 0)
     {
         CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
         
-        for (Line *line in self.levelLines)
+        for (Line *line in [[Level sharedInstance] levelLines])
         {
             CGContextRef c = UIGraphicsGetCurrentContext();
             CGContextSetStrokeColor(c, colourGeen);
@@ -64,7 +64,7 @@
 
 - (void) drawTapPoint
 {
-    if (self.playerPoints)
+    if ([[Level sharedInstance] playerPoints])
     {
         CGContextRef c = UIGraphicsGetCurrentContext();
 
@@ -74,30 +74,30 @@
 
         NSInteger i = 0;
         CGPoint firstPoint;
-        for (NSValue *val in self.playerPoints)
+        for (NSValue *val in [[Level sharedInstance] playerPoints])
         {
             CGPoint point = [val CGPointValue];
             if (i == 0)
             {
-                CGContextMoveToPoint(c, point.x + self.tapPoint.x, point.y + self.tapPoint.y);
+                CGContextMoveToPoint(c, point.x + [[Level sharedInstance] playerPosition].x, point.y + [[Level sharedInstance] playerPosition].y);
                 firstPoint = point;
             }
             else
             {
-                CGContextAddLineToPoint(c, point.x + self.tapPoint.x, point.y + self.tapPoint.y);
+                CGContextAddLineToPoint(c, point.x + [[Level sharedInstance] playerPosition].x, point.y + [[Level sharedInstance] playerPosition].y);
             }
             
             ++i;
         }
-        CGContextAddLineToPoint(c, firstPoint.x + self.tapPoint.x, firstPoint.y + self.tapPoint.y);
+        CGContextAddLineToPoint(c, firstPoint.x + [[Level sharedInstance] playerPosition].x, firstPoint.y + [[Level sharedInstance] playerPosition].y);
 
         CGContextStrokePath(c);
     }
     
-    if (self.playerPoints && [self.playerPoints count] > 0)
+    if ([[Level sharedInstance] playerPoints] && [[[Level sharedInstance] playerPoints] count] > 0)
     {
-        NSValue *valPlayer0 = [self.playerPoints objectAtIndex:0];
-        CGPoint playerPoint = CGPointMake(self.tapPoint.x + [valPlayer0 CGPointValue].x, self.tapPoint.y + [valPlayer0 CGPointValue].y);
+        NSValue *valPlayer0 = [[[Level sharedInstance] playerPoints] objectAtIndex:0];
+        CGPoint playerPoint = CGPointMake([[Level sharedInstance] playerPosition].x + [valPlayer0 CGPointValue].x, [[Level sharedInstance] playerPosition].y + [valPlayer0 CGPointValue].y);
         
         CGContextRef c = UIGraphicsGetCurrentContext();
         CGFloat colour[4] = {0.0f, 0.0f, 1.0f, 1.0f};
@@ -170,13 +170,13 @@
     
     CGAffineTransform transformRot = CGAffineTransformMakeRotation(_rotation);
     
-    for (NSInteger i = 0; i < [self.playerPoints count]; ++i)
+    for (NSInteger i = 0; i < [[[Level sharedInstance] playerPoints] count]; ++i)
     {
-        NSValue *val = [self.playerPoints objectAtIndex:i];
+        NSValue *val = [[[Level sharedInstance] playerPoints] objectAtIndex:i];
         CGPoint point = [val CGPointValue];
         CGPoint pointRot = CGPointApplyAffineTransform(point, transformRot);
         
-        [self.playerPoints replaceObjectAtIndex:i withObject:[NSValue valueWithCGPoint:pointRot]];
+        [[[Level sharedInstance] playerPoints] replaceObjectAtIndex:i withObject:[NSValue valueWithCGPoint:pointRot]];
     }
 }
 

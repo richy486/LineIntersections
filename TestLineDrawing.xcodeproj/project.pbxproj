@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		CABC947F16F03A8D008599BF /* Level.m in Sources */ = {isa = PBXBuildFile; fileRef = CABC947E16F03A8D008599BF /* Level.m */; };
 		CAD704D416E96CCC005DA45E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAD704D316E96CCC005DA45E /* UIKit.framework */; };
 		CAD704D616E96CCC005DA45E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAD704D516E96CCC005DA45E /* Foundation.framework */; };
 		CAD704D816E96CCC005DA45E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAD704D716E96CCC005DA45E /* CoreGraphics.framework */; };
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		CABC947D16F03A8D008599BF /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Level.h; sourceTree = "<group>"; };
+		CABC947E16F03A8D008599BF /* Level.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level.m; sourceTree = "<group>"; };
 		CAD704D016E96CCC005DA45E /* TestLineDrawing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLineDrawing.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD704D316E96CCC005DA45E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		CAD704D516E96CCC005DA45E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -135,6 +138,8 @@
 				CADBC91F16EEC1660090F81A /* Intersection.m */,
 				CADBC92116EFE2C80090F81A /* Line.h */,
 				CADBC92216EFE2C80090F81A /* Line.m */,
+				CABC947D16F03A8D008599BF /* Level.h */,
+				CABC947E16F03A8D008599BF /* Level.m */,
 			);
 			path = TestLineDrawing;
 			sourceTree = "<group>";
@@ -287,6 +292,7 @@
 				CAD7050D16E96F0D005DA45E /* View.m in Sources */,
 				CADBC92016EEC1660090F81A /* Intersection.m in Sources */,
 				CADBC92316EFE2C90090F81A /* Line.m in Sources */,
+				CABC947F16F03A8D008599BF /* Level.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

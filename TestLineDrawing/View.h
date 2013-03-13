@@ -9,9 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface View : UIView
-@property (nonatomic, strong) NSMutableArray *levelLines;
-@property (nonatomic, strong) NSMutableArray *playerPoints;
-@property (nonatomic) CGPoint tapPoint;
+
 
 @property (nonatomic, strong) NSArray *linesIntersecting;
 @property (nonatomic, strong) NSArray *intersectingPoints;
