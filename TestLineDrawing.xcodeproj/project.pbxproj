@@ -24,6 +24,7 @@
 		CAD7050A16E96D08005DA45E /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CAD7050916E96D08005DA45E /* ViewController.m */; };
 		CAD7050D16E96F0D005DA45E /* View.m in Sources */ = {isa = PBXBuildFile; fileRef = CAD7050C16E96F0D005DA45E /* View.m */; };
 		CADBC92016EEC1660090F81A /* Intersection.m in Sources */ = {isa = PBXBuildFile; fileRef = CADBC91F16EEC1660090F81A /* Intersection.m */; };
+		CADBC92316EFE2C90090F81A /* Line.m in Sources */ = {isa = PBXBuildFile; fileRef = CADBC92216EFE2C80090F81A /* Line.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,6 +63,8 @@
 		CAD7050C16E96F0D005DA45E /* View.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = View.m; sourceTree = "<group>"; };
 		CADBC91E16EEC1660090F81A /* Intersection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Intersection.h; sourceTree = "<group>"; };
 		CADBC91F16EEC1660090F81A /* Intersection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Intersection.m; sourceTree = "<group>"; };
+		CADBC92116EFE2C80090F81A /* Line.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Line.h; sourceTree = "<group>"; };
+		CADBC92216EFE2C80090F81A /* Line.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Line.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +133,8 @@
 				CAD7050C16E96F0D005DA45E /* View.m */,
 				CADBC91E16EEC1660090F81A /* Intersection.h */,
 				CADBC91F16EEC1660090F81A /* Intersection.m */,
+				CADBC92116EFE2C80090F81A /* Line.h */,
+				CADBC92216EFE2C80090F81A /* Line.m */,
 			);
 			path = TestLineDrawing;
 			sourceTree = "<group>";
@@ -281,6 +286,7 @@
 				CAD7050A16E96D08005DA45E /* ViewController.m in Sources */,
 				CAD7050D16E96F0D005DA45E /* View.m in Sources */,
 				CADBC92016EEC1660090F81A /* Intersection.m in Sources */,
+				CADBC92316EFE2C90090F81A /* Line.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

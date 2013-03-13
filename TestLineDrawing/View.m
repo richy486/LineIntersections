@@ -8,6 +8,7 @@
 
 #import "View.h"
 #import "Intersection.h"
+#import "Line.h"
 
 @interface View()
 {
@@ -43,34 +44,18 @@
 
 - (void) drawPath
 {
-    if (self.levelPoints && [self.levelPoints count] > 0)
+    if (self.levelLines && [self.levelLines count] > 0)
     {
-        CGFloat colourRed[4] = {1.0f, 0.0f, 0.0f, 1.0f};
         CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
         
-        for (NSInteger i = 1; i < [self.levelPoints count] + 1; ++i)
+        for (Line *line in self.levelLines)
         {
-            NSInteger indexA = i-1;
-            NSInteger indexB = i == [self.levelPoints count] ? 0 : i;
-            
-            NSValue *val2a = [self.levelPoints objectAtIndex:indexA];
-            CGPoint point2a = [val2a CGPointValue];
-            NSValue *val2b = [self.levelPoints objectAtIndex:indexB];
-            CGPoint point2b = [val2b CGPointValue];
-            
             CGContextRef c = UIGraphicsGetCurrentContext();
-//            if (self.linesIntersecting && i - 1 < [self.linesIntersecting count]
-//                && [[self.linesIntersecting objectAtIndex:i - 1] boolValue] == YES)
-//            {
-//                CGContextSetStrokeColor(c, colourRed);
-//            }
-//            else
-            {
-                CGContextSetStrokeColor(c, colourGeen);
-            }
+            CGContextSetStrokeColor(c, colourGeen);
             
-            CGContextMoveToPoint(c, point2a.x, point2a.y);
-            CGContextAddLineToPoint(c, point2b.x, point2b.y);
+            
+            CGContextMoveToPoint(c, line.pointA.x, line.pointA.y);
+            CGContextAddLineToPoint(c, line.pointB.x, line.pointB.y);
             
             CGContextStrokePath(c);
         }

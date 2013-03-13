@@ -9,6 +9,7 @@
 #import "ViewController.h"
 #import "View.h"
 #import "Intersection.h"
+#import "Line.h"
 
 @interface ViewController ()
 {
@@ -51,7 +52,21 @@ const double toll = 0.4;
                        ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + offset, 75.0 * mult + offset)]
                        ,    [NSValue valueWithCGPoint:CGPointMake( 0.0 * mult + offset, 25.0 * mult + offset)]
                        , nil];
-    [(View*)self.view setLevelPoints:levelPoints];
+    
+    NSMutableArray *levelLines = [NSMutableArray arrayWithCapacity:[levelPoints count]];
+    for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
+    {
+        NSInteger indexA = levelIndex-1;
+        NSInteger indexB = levelIndex == [levelPoints count] ? 0 : levelIndex;
+        
+        NSValue *valA = [levelPoints objectAtIndex:indexA];
+        CGPoint pointA = [valA CGPointValue];
+        NSValue *valB = [levelPoints objectAtIndex:indexB];
+        CGPoint pointB = [valB CGPointValue];
+        
+        [levelLines addObject:[Line lineWithPointA:pointA pointB:pointB]];
+    }
+    [(View*)self.view setLevelLines:levelLines];
     
     NSMutableArray *playerPoints = [NSMutableArray arrayWithObjects:
                              [NSValue valueWithCGPoint:CGPointMake(-30.0,  -30.0)]
@@ -100,8 +115,6 @@ const double toll = 0.4;
     
     [(View*)self.view setRotation:thisRotate * 2];
     
-//    NSLog(@"rotation: %.02f, prevRotation: %.02f |||| rotation: %.02f", gestureRecognizer.rotation, _prevRotation, [(View*)self.view rotation]);
-    
     [self.view setNeedsDisplay];
     [self checkInOutPlayer];
 }
@@ -121,8 +134,6 @@ const double toll = 0.4;
     
     [(View*)self.view setTapPoint:newCenter];
     
-//    NSLog(@"new centre: %.02f, %.02f", newCenter.x, newCenter.y);
-    
     [self.view setNeedsDisplay];
     [self checkInOutPlayer];
 }
@@ -137,14 +148,14 @@ const double toll = 0.4;
 
 - (void) checkInOutPlayer
 {
-    NSArray *levelPoints = [(View*)self.view levelPoints];
+    NSMutableArray *levelLines = [(View*)self.view levelLines];
     NSArray *playerPoints = [(View*)self.view playerPoints];
     
-    if (levelPoints && [levelPoints count] > 1 && playerPoints && [playerPoints count] > 0)
+    if (levelLines && [levelLines count] > 1 && playerPoints && [playerPoints count] > 0)
     {
         CGPoint tapPoint = [(View*)self.view tapPoint];
-        NSMutableArray *intersectingPoints = [NSMutableArray arrayWithCapacity:[levelPoints count]];
-        NSMutableArray *intersectingLines = [NSMutableArray arrayWithCapacity:[levelPoints count]];
+        NSMutableArray *intersectingPoints = [NSMutableArray arrayWithCapacity:[levelLines count]];
+        NSMutableArray *intersectingLines = [NSMutableArray arrayWithCapacity:[levelLines count]];
         
         BOOL foundIntersection = NO;
         for (NSInteger playerIndex = 1; playerIndex < [playerPoints count] + 1; ++playerIndex)
@@ -157,22 +168,16 @@ const double toll = 0.4;
             NSValue *valPlayer_b = [playerPoints objectAtIndex:indexB];
             CGPoint pointPlayer_b = CGPointMake(tapPoint.x + [valPlayer_b CGPointValue].x, tapPoint.y + [valPlayer_b CGPointValue].y);
             
-            for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
+            for (Line *line in levelLines)
             {
-                NSInteger indexA = levelIndex-1;
-                NSInteger indexB = levelIndex == [levelPoints count] ? 0 : levelIndex;
-                
-                NSValue *val2a = [levelPoints objectAtIndex:indexA];
-                CGPoint point2a = [val2a CGPointValue];
-                NSValue *val2b = [levelPoints objectAtIndex:indexB];
-                CGPoint point2b = [val2b CGPointValue];
+                CGPoint point2a = line.pointA;
+                CGPoint point2b = line.pointB;
                 
                 double x = 0.0;
                 double y = 0.0;
                 if ([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b intersectingPointX:&x intersectingPointY:&y])
                 {
                     [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
-//                    NSLog(@"intersection: %.02f, %.02f", x, y);
                     
                     foundIntersection = YES;
                     break;
@@ -195,16 +200,10 @@ const double toll = 0.4;
             CGPoint pointPlayer_a = CGPointMake(0.0, playerPoint.y);
             CGPoint pointPlayer_b = playerPoint;
             
-//            NSLog(@" ------ pp 0 start: ");
-            for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
+            for (Line *line in levelLines)
             {
-                NSInteger indexA = levelIndex-1;
-                NSInteger indexB = levelIndex == [levelPoints count] ? 0 : levelIndex;
-                
-                NSValue *val2a = [levelPoints objectAtIndex:indexA];
-                CGPoint point2a = [val2a CGPointValue];
-                NSValue *val2b = [levelPoints objectAtIndex:indexB];
-                CGPoint point2b = [val2b CGPointValue];
+                CGPoint point2a = line.pointA;
+                CGPoint point2b = line.pointB;
                 
                 double x = 0.0;
                 double y = 0.0;
@@ -213,7 +212,6 @@ const double toll = 0.4;
                     BOOL found = NO;
                     for (Intersection *intersection in intersectingPoints)
                     {
-//                        NSLog(@"intersection: %.02f, %.02f ||| last intersection: %.02f, %.02f", x, y, intersection.intersectionX, intersection.intersectionY);
                         if (intersection.intersectionX >= x - toll*2 && intersection.intersectionX <= x + toll*2
                             && intersection.intersectionY >= y - toll*2 && intersection.intersectionY <= y + toll*2)
                         {
@@ -261,12 +259,10 @@ const double toll = 0.4;
                     if (!found)
                     {
                         [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
-//                        NSLog(@"intersection: %.02f, %.02f", x, y);
                         intersectionsCount++;
                     }
                 }
             }
-//            NSLog(@" ------ pp 0 end ");
         }
         
         [(View*)self.view setIntersectingPoints:intersectingPoints];
@@ -330,6 +326,13 @@ const double toll = 0.4;
         return YES;
     }
     return NO;
+}
+
+#pragma tools
+
+- (float) dot:(CGPoint)p1 andPoint:(CGPoint)p2
+{
+	return (p1.x * p2.x) + (p1.y * p2.y);
 }
 
 #pragma mark - memory man
