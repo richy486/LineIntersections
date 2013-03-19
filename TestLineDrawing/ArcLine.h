@@ -15,4 +15,7 @@
 @property (nonatomic) double angle;
 
 + (id) lineWithPointA:(CGPoint) pointA pointB:(CGPoint) pointB radius:(double) radius chord:(double) chord angle:(double) angle;
+- (BOOL) intersectionsPointB:(CGPoint) pointA pointA:(CGPoint) pointB
+          intersectingPointX:(double*) intersectingPointX
+          intersectingPointY:(double*) intersectingPointY;
 @end

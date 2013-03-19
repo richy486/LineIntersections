@@ -21,7 +21,7 @@
 @property (nonatomic, strong) UILabel *resultLabel;
 @end
 
-const double toll = 0.4;
+
 
 @implementation ViewController
 
@@ -187,7 +187,7 @@ const double toll = 0.4;
                 
                 double x = 0.0;
                 double y = 0.0;
-                if ([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b intersectingPointX:&x intersectingPointY:&y])
+                if ([line intersectionsPointB:pointPlayer_a pointA:pointPlayer_b intersectingPointX:&x intersectingPointY:&y]) //([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b intersectingPointX:&x intersectingPointY:&y])
                 {
                     [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
                     
@@ -219,13 +219,13 @@ const double toll = 0.4;
                 
                 double x = 0.0;
                 double y = 0.0;
-                if ([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b  intersectingPointX:&x intersectingPointY:&y])
+                if ([line intersectionsPointB:pointPlayer_a pointA:pointPlayer_b intersectingPointX:&x intersectingPointY:&y]) //([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b  intersectingPointX:&x intersectingPointY:&y])
                 {
                     BOOL found = NO;
                     for (Intersection *intersection in intersectingPoints)
                     {
-                        if (intersection.intersectionX >= x - toll*2 && intersection.intersectionX <= x + toll*2
-                            && intersection.intersectionY >= y - toll*2 && intersection.intersectionY <= y + toll*2)
+                        if (intersection.intersectionX >= x - TOLL*2 && intersection.intersectionX <= x + TOLL*2
+                            && intersection.intersectionY >= y - TOLL*2 && intersection.intersectionY <= y + TOLL*2)
                         {
                             CGPoint playerFullLength_a = CGPointMake(0.0, playerPoint.y);
                             CGPoint playerFullLength_b = CGPointMake(self.view.frame.size.width, playerPoint.y);
@@ -234,7 +234,7 @@ const double toll = 0.4;
                             {
                                 double xA = 0.0;
                                 double yA = 0.0;
-                                if ([self intersectionsPoint1a:playerFullLength_a point1b:playerFullLength_b
+                                if ([Line intersectionsPoint1a:playerFullLength_a point1b:playerFullLength_b
                                                        point2a:intersection.linePoint2b point2b:point2a
                                             intersectingPointX:&xA intersectingPointY:&yA])
                                 {
@@ -250,7 +250,7 @@ const double toll = 0.4;
                             {
                                 double xA = 0.0;
                                 double yA = 0.0;
-                                if ([self intersectionsPoint1a:playerFullLength_a point1b:playerFullLength_b
+                                if ([Line intersectionsPoint1a:playerFullLength_a point1b:playerFullLength_b
                                                        point2a:intersection.linePoint2a point2b:point2b
                                             intersectingPointX:&xA intersectingPointY:&yA])
                                 {
@@ -297,54 +297,6 @@ const double toll = 0.4;
             [self.resultLabel setBackgroundColor:[UIColor colorWithRed:0.8 green:1.0 blue:0.8 alpha:1.0]];
         }
     }
-}
-
-// http://community.topcoder.com/tc?module=Static&d1=tutorials&d2=geometry2
-- (BOOL) intersectionsPoint1a:(CGPoint) point1a point1b:(CGPoint) point1b
-                      point2a:(CGPoint) point2a point2b:(CGPoint) point2b
-           intersectingPointX:(double*) intersectingPointX
-           intersectingPointY:(double*) intersectingPointY
-{
-    double A1 = point1b.y - point1a.y;
-    double B1 = point1a.x - point1b.x;
-    double C1 = A1 * point1a.x + B1 * point1a.y;
-    
-    double A2 = point2b.y - point2a.y;
-    double B2 = point2a.x - point2b.x;
-    double C2 = A2 * point2a.x + B2 * point2a.y;
-    
-    double det = A1*B2 - A2*B1;
-    
-    double x, y;
-    if(det == 0){
-        return NO;
-    }else{
-        x = (B2*C1 - B1*C2)/det;
-        y = (A1*C2 - A2*C1)/det;
-        
-        
-    }
-    
-    BOOL onLineX1 = MIN(point1a.x, point1b.x) <= x + toll && x - toll <= MAX(point1a.x, point1b.x);
-    BOOL onLineY1 = MIN(point1a.y, point1b.y) <= y + toll && y - toll <= MAX(point1a.y, point1b.y);
-    BOOL onLineX2 = MIN(point2a.x, point2b.x) <= x + toll && x - toll <= MAX(point2a.x, point2b.x);
-    BOOL onLineY2 = MIN(point2a.y, point2b.y) <= y + toll && y - toll <= MAX(point2a.y, point2b.y);
-    
-    *intersectingPointX = x;
-    *intersectingPointY = y;
-    
-    if (onLineX1 && onLineY1 && onLineX2 && onLineY2)
-    {
-        return YES;
-    }
-    return NO;
-}
-
-#pragma tools
-
-- (float) dot:(CGPoint)p1 andPoint:(CGPoint)p2
-{
-	return (p1.x * p2.x) + (p1.y * p2.y);
 }
 
 #pragma mark - memory man
