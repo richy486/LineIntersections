@@ -16,14 +16,14 @@
 @property (nonatomic) BOOL inward;
 
 + (id) lineWithPointA:(CGPoint) pointA pointB:(CGPoint) pointB radius:(double) radius chord:(double) chord angle:(double) angle;
-- (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
-          intersectingPointX:(double*) intersectingPointX
-          intersectingPointY:(double*) intersectingPointY;
+//- (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
+//          intersectingPointX:(double*) intersectingPointX
+//          intersectingPointY:(double*) intersectingPointY;
 - (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
          intersectingPoint1X:(double*) intersectingPoint1X
          intersectingPoint1Y:(double*) intersectingPoint1Y
          intersectingPoint2X:(double*) intersectingPoint2X
          intersectingPoint2Y:(double*) intersectingPoint2Y;
-
+- (BOOL) isPointInsideSegment:(CGPoint) point;
 - (void) calculateAngle;
 @end

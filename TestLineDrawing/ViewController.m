@@ -46,23 +46,23 @@
     
     CGFloat mult = 5.0;
     
-//    NSArray *levelPoints = [NSArray arrayWithObjects:
-//                            [NSValue valueWithCGPoint:CGPointMake(25.0 * mult + LEVEL_OFFSET,  0.0 * mult + LEVEL_OFFSET)]
-//                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
-//                       ,    [NSValue valueWithCGPoint:CGPointMake(37.5 * mult + LEVEL_OFFSET, 37.5 * mult + LEVEL_OFFSET)]
-//                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 50.0 * mult + LEVEL_OFFSET)]
-//                       ,    [NSValue valueWithCGPoint:CGPointMake(100.0 * mult + LEVEL_OFFSET, 0.0 * mult + LEVEL_OFFSET)]
-//                       ,    [NSValue valueWithCGPoint:CGPointMake(112.5 * mult + LEVEL_OFFSET, 12.5 * mult + LEVEL_OFFSET)]
-//                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 75.0 * mult + LEVEL_OFFSET)]
-//                       ,    [NSValue valueWithCGPoint:CGPointMake( 0.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
-//                       , nil];
-    const float size = 20.0;
     NSArray *levelPoints = [NSArray arrayWithObjects:
-                            [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET,  -size * mult + LEVEL_OFFSET)]
-                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, -size * mult + LEVEL_OFFSET)]
-                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
-                            ,    [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
-                            , nil];
+                            [NSValue valueWithCGPoint:CGPointMake(25.0 * mult + LEVEL_OFFSET,  0.0 * mult + LEVEL_OFFSET)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(37.5 * mult + LEVEL_OFFSET, 37.5 * mult + LEVEL_OFFSET)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 50.0 * mult + LEVEL_OFFSET)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(100.0 * mult + LEVEL_OFFSET, 0.0 * mult + LEVEL_OFFSET)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(112.5 * mult + LEVEL_OFFSET, 12.5 * mult + LEVEL_OFFSET)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 75.0 * mult + LEVEL_OFFSET)]
+                       ,    [NSValue valueWithCGPoint:CGPointMake( 0.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
+                       , nil];
+//    const float size = 20.0;
+//    NSArray *levelPoints = [NSArray arrayWithObjects:
+//                            [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET,  -size * mult + LEVEL_OFFSET)]
+//                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, -size * mult + LEVEL_OFFSET)]
+//                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
+//                            ,    [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
+//                            , nil];
     
     NSMutableArray *levelLines = [NSMutableArray arrayWithCapacity:[levelPoints count]];
     for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
@@ -82,12 +82,12 @@
             double radius = chord * 0.75;
             
             // 
-            double deltaY = pointB.y - pointA.y;
-            double deltaX = pointB.x - pointA.x;
+//            double deltaY = pointB.y - pointA.y;
+//            double deltaX = pointB.x - pointA.x;
 
 //            // 
-//            double deltaY = pointA.y - pointB.y;
-//            double deltaX = pointA.x - pointB.x;
+            double deltaY = pointA.y - pointB.y;
+            double deltaX = pointA.x - pointB.x;
             
             double angle = atan2(deltaY, deltaX);
             
@@ -218,6 +218,8 @@
         NSMutableArray *intersectingPoints = [NSMutableArray arrayWithCapacity:[levelLines count]];
         NSMutableArray *intersectingLines = [NSMutableArray arrayWithCapacity:[levelLines count]];
         
+        // -- Edge intersections --
+        
         BOOL foundIntersection = NO;
 #ifndef HIDE_PLAYER_BODY
         for (NSInteger playerIndex = 1; playerIndex < [playerPoints count] + 1; ++playerIndex)
@@ -252,6 +254,7 @@
             }
         }
 #endif
+        // -- Ray trace intersections --
         
         NSInteger intersectionsCount = 0;
         if (!foundIntersection)
@@ -270,34 +273,34 @@
                 double x = 0.0;
                 double y = 0.0;
                 
-                if ([line respondsToSelector:@selector(intersectionsPointA:pointB:intersectingPoint1X:intersectingPoint1Y:intersectingPoint2X:intersectingPoint2Y:)])
-                {
-                    double x2 = 0.0;
-                    double y2 = 0.0;
-                    if ([(ArcLine*)line intersectionsPointA:pointPlayer_a pointB:pointPlayer_b intersectingPoint1X:&x intersectingPoint1Y:&y intersectingPoint2X:&x2 intersectingPoint2Y:&y2])
-                    {
-                        if (x > -MAXFLOAT & y > -MAXFLOAT)
-                        {
-                            BOOL found1 = [self checkCornersWithPlayerPoint:playerPoint point2a:point2a point2b:point2b intersectingPoints:intersectingPoints intersectingLines:intersectingLines intersectionX:x intersectionY:y];
-                            if (!found1)
-                            {
-                                [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
-                                intersectionsCount++;
-                            }
-                        }
-                        
-                        if (x2 > -MAXFLOAT & y2 > -MAXFLOAT)
-                        {
-                            BOOL found2 = [self checkCornersWithPlayerPoint:playerPoint point2a:point2a point2b:point2b intersectingPoints:intersectingPoints intersectingLines:intersectingLines intersectionX:x2 intersectionY:y2];
-                            if (!found2)
-                            {
-                                [intersectingPoints addObject:[Intersection intersectionWithX:x2 Y:y2 point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
-                                intersectionsCount++;
-                            }
-                        }
-                    }
-                }
-                else
+//                if ([line respondsToSelector:@selector(intersectionsPointA:pointB:intersectingPoint1X:intersectingPoint1Y:intersectingPoint2X:intersectingPoint2Y:)])
+//                {
+//                    double x2 = 0.0;
+//                    double y2 = 0.0;
+//                    if ([(ArcLine*)line intersectionsPointA:pointPlayer_a pointB:pointPlayer_b intersectingPoint1X:&x intersectingPoint1Y:&y intersectingPoint2X:&x2 intersectingPoint2Y:&y2])
+//                    {
+//                        if (x > -MAXFLOAT & y > -MAXFLOAT)
+//                        {
+//                            BOOL found1 = [self checkCornersWithPlayerPoint:playerPoint point2a:point2a point2b:point2b intersectingPoints:intersectingPoints intersectingLines:intersectingLines intersectionX:x intersectionY:y];
+//                            if (!found1)
+//                            {
+//                                [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
+//                                intersectionsCount++;
+//                            }
+//                        }
+//                        
+//                        if (x2 > -MAXFLOAT & y2 > -MAXFLOAT)
+//                        {
+//                            BOOL found2 = [self checkCornersWithPlayerPoint:playerPoint point2a:point2a point2b:point2b intersectingPoints:intersectingPoints intersectingLines:intersectingLines intersectionX:x2 intersectionY:y2];
+//                            if (!found2)
+//                            {
+//                                [intersectingPoints addObject:[Intersection intersectionWithX:x2 Y:y2 point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
+//                                intersectionsCount++;
+//                            }
+//                        }
+//                    }
+//                }
+//                else
                 {
                     if ([line intersectionsPointA:pointPlayer_a pointB:pointPlayer_b intersectingPointX:&x intersectingPointY:&y]) //([self intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b  intersectingPointX:&x intersectingPointY:&y])
                     {
@@ -312,15 +315,51 @@
             }
         }
         
+        // -- Arc-segment intersections --
+//        BOOL insideLevelFromArcs = YES;
+        BOOL outsideShapeFromInwardArcs = NO;
+        BOOL insideShapeFromOutwardArcs = NO;
+        for (Line *line in levelLines)
+        {
+            if ([line respondsToSelector:@selector(isPointInsideSegment:)] && [line respondsToSelector:@selector(inward)])
+            {
+                NSValue *valPlayer0 = [playerPoints objectAtIndex:0];
+                CGPoint playerPoint = CGPointMake(playerPosition.x + [valPlayer0 CGPointValue].x, playerPosition.y + [valPlayer0 CGPointValue].y);
+                
+                BOOL insideSegment = [(ArcLine*)line isPointInsideSegment:playerPoint];
+                BOOL inward = [(ArcLine*)line inward];
+                
+                if (insideSegment)
+                {
+                    if (inward)
+                    {
+                        outsideShapeFromInwardArcs = YES;
+                        break;
+                    }
+                    else
+                    {
+                        insideShapeFromOutwardArcs = YES;
+                    }
+                }
+            }
+        }
+        
+        
         [(View*)self.view setIntersectingPoints:intersectingPoints];
         [(View*)self.view setIntersectingLines:intersectingLines];
         
-        if (foundIntersection || intersectionsCount %2 == 0)
+        if (!insideShapeFromOutwardArcs && (foundIntersection || intersectionsCount %2 == 0 || outsideShapeFromInwardArcs))
         {
             NSValue *valPlayer0 = [playerPoints objectAtIndex:0];
             CGPoint playerPoint = CGPointMake(playerPosition.x + [valPlayer0 CGPointValue].x, playerPosition.y + [valPlayer0 CGPointValue].y);
             
-            [self.resultLabel setText:[NSString stringWithFormat:@"outside\nfoundIntersection: %d, intersectionsCount: %d\npp %.02f, %.02f", foundIntersection, intersectionsCount, playerPoint.x, playerPoint.y]];
+            [self.resultLabel setText:[NSString stringWithFormat:@"outside"
+                                       "\nfoundIntersection: %d, intersectionsCount: %d"
+                                       "\n, outsideShapeFromInwardArcs: %d, insideShapeFromOutwardArcs: %d"
+                                       "\npp %.02f, %.02f"
+                                       , foundIntersection, intersectionsCount
+                                       , outsideShapeFromInwardArcs, insideShapeFromOutwardArcs
+                                       , playerPoint.x, playerPoint.y]];
             [self.resultLabel setBackgroundColor:[UIColor colorWithRed:1.0 green:0.8 blue:0.8 alpha:1.0]];
         }
         else
@@ -328,7 +367,12 @@
             NSValue *valPlayer0 = [playerPoints objectAtIndex:0];
             CGPoint playerPoint = CGPointMake(playerPosition.x + [valPlayer0 CGPointValue].x, playerPosition.y + [valPlayer0 CGPointValue].y);
             
-            [self.resultLabel setText:[NSString stringWithFormat:@"inside\nfoundIntersection: %d, intersectionsCount: %d\npp %.02f, %.02f", foundIntersection, intersectionsCount, playerPoint.x, playerPoint.y]];
+            [self.resultLabel setText:[NSString stringWithFormat:@"inside"
+                                       "\nfoundIntersection: %d, intersectionsCount: %d"
+                                       "\n, outsideShapeFromInwardArcs: %d, insideShapeFromOutwardArcs: %d"
+                                       "\npp %.02f, %.02f", foundIntersection, intersectionsCount
+                                       , outsideShapeFromInwardArcs, insideShapeFromOutwardArcs
+                                       , playerPoint.x, playerPoint.y]];
             [self.resultLabel setBackgroundColor:[UIColor colorWithRed:0.8 green:1.0 blue:0.8 alpha:1.0]];
         }
     }

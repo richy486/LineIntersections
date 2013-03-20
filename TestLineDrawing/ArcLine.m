@@ -27,14 +27,14 @@
     return arcLine;
 }
 
-- (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
-          intersectingPointX:(double*) intersectingPointX
-          intersectingPointY:(double*) intersectingPointY
-{
-    double intersectingPoint2X = 0.0;
-    double intersectingPoint2Y = 0.0;
-    return [self intersectionsPointA:pointA pointB:pointB intersectingPoint1X:intersectingPointX intersectingPoint1Y:intersectingPointY intersectingPoint2X:&intersectingPoint2X intersectingPoint2Y:&intersectingPoint2Y];
-}
+//- (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
+//          intersectingPointX:(double*) intersectingPointX
+//          intersectingPointY:(double*) intersectingPointY
+//{
+//    double intersectingPoint2X = 0.0;
+//    double intersectingPoint2Y = 0.0;
+//    return [self intersectionsPointA:pointA pointB:pointB intersectingPoint1X:intersectingPointX intersectingPoint1Y:intersectingPointY intersectingPoint2X:&intersectingPoint2X intersectingPoint2Y:&intersectingPoint2Y];
+//}
 - (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
          intersectingPoint1X:(double*) intersectingPoint1X
          intersectingPoint1Y:(double*) intersectingPoint1Y
@@ -147,6 +147,84 @@
     return intersection && (inside1 || inside2);
 }
 
+- (BOOL) isPointInsideSegment:(CGPoint) point
+{
+    BOOL insideSegment = NO;
+    
+    double theta = 2 * asin(self.chord / (2 * self.radius));
+    
+    CGFloat startPoint = self.angle - (theta/2) - M_PI_2;
+    CGFloat endPoint = startPoint + theta;
+    CGFloat startPointNorm = [Maths wrap:startPoint max:M_PI min:-M_PI];
+    CGFloat endPointNorm = [Maths wrap:endPoint max:M_PI min:-M_PI];
+    
+    double height = self.radius - (self.radius * (1.0 - cos(theta/2)));
+    double centreOfPointsX = self.pointA.x + 0.5 * (self.pointB.x - self.pointA.x);
+    double centreOfPointsY = self.pointA.y + 0.5 * (self.pointB.y - self.pointA.y);
+//    double rotateAngle = self.angle + M_PI_2;
+    
+    CGAffineTransform transform = CGAffineTransformIdentity;
+    transform = CGAffineTransformTranslate(transform, self.pointA.x, self.pointA.y);
+    transform = CGAffineTransformRotate(transform, self.angle);
+    transform = CGAffineTransformTranslate(transform, 0, height);
+    transform = CGAffineTransformRotate(transform, -self.angle);
+    transform = CGAffineTransformTranslate(transform, -self.pointA.x, -self.pointA.y);
+    CGPoint centrePoint = CGPointApplyAffineTransform(CGPointMake(centreOfPointsX, centreOfPointsY), transform);
+    
+    
+    
+    double distanceToCentre = sqrt(pow(point.x - centrePoint.x, 2) + pow(point.y - centrePoint.y, 2));
+    NSLog(@"distanceToCentre: %.05f, radius: %.05f", distanceToCentre, self.radius);
+    
+    if (distanceToCentre <= self.radius)
+    {
+        CGFloat pointTheta = atan2(point.y - centrePoint.y, point.x - centrePoint.x);
+        pointTheta = [Maths wrap:pointTheta max:M_PI min:-M_PI];
+        
+        BOOL insideSector = NO;
+        
+        if (startPointNorm < endPointNorm)
+        {
+            insideSector = pointTheta >= startPointNorm && pointTheta <= endPointNorm;
+        }
+        else
+        {
+            if (startPointNorm >= 0.0 && endPointNorm <= 0.0)
+            {
+                if ((pointTheta >= startPointNorm && pointTheta <= M_PI && pointTheta >= 0)
+                    || (pointTheta <= endPointNorm && pointTheta >= -M_PI && pointTheta <= 0)
+                    )
+                {
+                    insideSector = YES;
+                }
+            }
+            else
+            {
+                if (pointTheta <= startPointNorm && pointTheta >= endPointNorm)
+                {
+                    insideSector = YES;
+                }
+            }
+            
+        }
+        
+        if (insideSector)
+        {
+            CGPoint chordLineA = CGPointMake(centrePoint.x + self.radius * cos(startPoint), centrePoint.y + self.radius * sin(startPoint));
+            CGPoint chordLineB = CGPointMake(centrePoint.x + self.radius * cos(endPoint), centrePoint.y + self.radius * sin(endPoint));
+            
+            double intersectingX = 0.0;
+            double intersectingY = 0.0;
+            BOOL isIntersection = [Line intersectionsPoint1a:chordLineA point1b:chordLineB point2a:point point2b:centrePoint intersectingPointX:&intersectingX intersectingPointY:&intersectingY];
+            
+            insideSegment = isIntersection;
+        }
+        
+    }
+    
+    return insideSegment;
+}
+
 // http://stackoverflow.com/a/1084899/667834
 - (BOOL) circleLineIntersectionPointA:(CGPoint) pointA pointB:(CGPoint) pointB
                           circlePoint:(CGPoint) circlePoint circleRadius:(CGFloat) radius
@@ -237,7 +315,7 @@
     
     [self calculateAngle];
     
-    NSLog(@"chord: %.05f, radius: %.05f, angle: %.05f", self.chord, self.radius, self.angle);
+//    NSLog(@"chord: %.05f, radius: %.05f, angle: %.05f", self.chord, self.radius, self.angle);
     
     // theta = 2 arcsin(c/[2r]),
     double theta = 2 * asin(self.chord / (2 * self.radius));
@@ -266,7 +344,7 @@
         CGContextStrokePath(c);
     }
     
-    CGFloat extraColour[4] = {self.inward ? 1.0f: 0.0f, 0.0f, 1.0f, 1.0f} ;
+    CGFloat extraColour[4] = {self.inward ? 1.0f: 0.0f, 0.0f, 1.0f, 0.5f} ;
     
     // points
     {
