@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		CABC947F16F03A8D008599BF /* Level.m in Sources */ = {isa = PBXBuildFile; fileRef = CABC947E16F03A8D008599BF /* Level.m */; };
 		CABC948216F04A41008599BF /* ArcLine.m in Sources */ = {isa = PBXBuildFile; fileRef = CABC948116F04A41008599BF /* ArcLine.m */; };
+		CABC948716F8142D008599BF /* Maths.m in Sources */ = {isa = PBXBuildFile; fileRef = CABC948616F8142D008599BF /* Maths.m */; };
 		CAD704D416E96CCC005DA45E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAD704D316E96CCC005DA45E /* UIKit.framework */; };
 		CAD704D616E96CCC005DA45E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAD704D516E96CCC005DA45E /* Foundation.framework */; };
 		CAD704D816E96CCC005DA45E /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CAD704D716E96CCC005DA45E /* CoreGraphics.framework */; };
@@ -44,6 +45,8 @@
 		CABC947E16F03A8D008599BF /* Level.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Level.m; sourceTree = "<group>"; };
 		CABC948016F04A41008599BF /* ArcLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArcLine.h; sourceTree = "<group>"; };
 		CABC948116F04A41008599BF /* ArcLine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArcLine.m; sourceTree = "<group>"; };
+		CABC948516F8142D008599BF /* Maths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Maths.h; sourceTree = "<group>"; };
+		CABC948616F8142D008599BF /* Maths.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Maths.m; sourceTree = "<group>"; };
 		CAD704D016E96CCC005DA45E /* TestLineDrawing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TestLineDrawing.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CAD704D316E96CCC005DA45E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		CAD704D516E96CCC005DA45E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -132,6 +135,8 @@
 			children = (
 				CAD704DA16E96CCC005DA45E /* Supporting Files */,
 				CAD704E216E96CCC005DA45E /* AppDelegate.h */,
+				CABC948516F8142D008599BF /* Maths.h */,
+				CABC948616F8142D008599BF /* Maths.m */,
 				CAD704E316E96CCC005DA45E /* AppDelegate.m */,
 				CAD7050816E96D08005DA45E /* ViewController.h */,
 				CAD7050916E96D08005DA45E /* ViewController.m */,
@@ -299,6 +304,7 @@
 				CADBC92316EFE2C90090F81A /* Line.m in Sources */,
 				CABC947F16F03A8D008599BF /* Level.m in Sources */,
 				CABC948216F04A41008599BF /* ArcLine.m in Sources */,
+				CABC948716F8142D008599BF /* Maths.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

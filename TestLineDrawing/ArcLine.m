@@ -7,6 +7,7 @@
 //
 
 #import "ArcLine.h"
+#import "Maths.h"
 
 @implementation ArcLine
 + (id) lineWithPointA:(CGPoint) pointA pointB:(CGPoint) pointB radius:(double) radius chord:(double) chord angle:(double) angle
@@ -20,37 +21,47 @@
     
     if (radius*2 < chord)
     {
-        NSLog(@"waning diamater (%.02f) is less than chord (%.02f)", radius*2, chord);
+        NSLog(@"warning diamater (%.02f) is less than chord (%.02f)", radius*2, chord);
     }
     
     return arcLine;
 }
 
-- (BOOL) intersectionsPointB:(CGPoint) pointA pointA:(CGPoint) pointB
+- (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
           intersectingPointX:(double*) intersectingPointX
           intersectingPointY:(double*) intersectingPointY
 {
+    double intersectingPoint2X = 0.0;
+    double intersectingPoint2Y = 0.0;
+    return [self intersectionsPointA:pointA pointB:pointB intersectingPoint1X:intersectingPointX intersectingPoint1Y:intersectingPointY intersectingPoint2X:&intersectingPoint2X intersectingPoint2Y:&intersectingPoint2Y];
+}
+- (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
+         intersectingPoint1X:(double*) intersectingPoint1X
+         intersectingPoint1Y:(double*) intersectingPoint1Y
+         intersectingPoint2X:(double*) intersectingPoint2X
+         intersectingPoint2Y:(double*) intersectingPoint2Y
+{
     //return [super intersectionsPointB:pointA pointA:pointB intersectingPointX:intersectingPointX intersectingPointY:intersectingPointY];
     
-    CGFloat theta = 2 * asin(self.chord / (2 * self.radius));
+    double theta = 2 * asin(self.chord / (2 * self.radius));
     
-    double height = self.radius - (self.radius * (1 - cos(theta/2)));
+    double height = self.radius - (self.radius * (1.0 - cos(theta/2)));
     double centreOfPointsX = self.pointA.x + 0.5 * (self.pointB.x - self.pointA.x);
     double centreOfPointsY = self.pointA.y + 0.5 * (self.pointB.y - self.pointA.y);
     double rotateAngle = self.angle + M_PI_2;
 
-    CGFloat startPoint = -self.angle - (theta/2) - M_PI_2;
+    CGFloat startPoint = self.angle - (theta/2) - M_PI_2;
     CGFloat endPoint = startPoint + theta;
     CGFloat min = -M_PI;
     CGFloat max = M_PI;
     
     CGAffineTransform transform = CGAffineTransformIdentity;
-    transform = CGAffineTransformRotate(transform, rotateAngle);
+    transform = CGAffineTransformTranslate(transform, self.pointA.x, self.pointA.y);
+    transform = CGAffineTransformRotate(transform, self.angle);
     transform = CGAffineTransformTranslate(transform, 0, height);
-    transform = CGAffineTransformRotate(transform, -rotateAngle);
-    transform = CGAffineTransformTranslate(transform, centreOfPointsX, centreOfPointsY);
-    
-    CGPoint point = CGPointApplyAffineTransform(CGPointMake(0, 0), transform);
+    transform = CGAffineTransformRotate(transform, -self.angle);
+    transform = CGAffineTransformTranslate(transform, -self.pointA.x, -self.pointA.y);
+    CGPoint point = CGPointApplyAffineTransform(CGPointMake(centreOfPointsX, centreOfPointsY), transform);
     
     double intersectionA = 0.0;
     double intersectionB = 0.0;
@@ -72,8 +83,8 @@
     
     BOOL inside1 = NO;
     BOOL inside2 = NO;
-    CGFloat startPointNorm = [self wrap:startPoint max:max min:min];
-    CGFloat endPointNorm = [self wrap:endPoint max:max min:min];
+    CGFloat startPointNorm = [Maths wrap:startPoint max:max min:min];
+    CGFloat endPointNorm = [Maths wrap:endPoint max:max min:min];
     if (startPointNorm < endPointNorm)
     {
         inside1 = theta1 >= startPointNorm && theta1 <= endPointNorm;
@@ -111,8 +122,27 @@
         
     }
     
-    *intersectingPointX = p1.x;
-    *intersectingPointY = p1.y;
+    if (inside1)
+    {
+        *intersectingPoint1X = p1.x;
+        *intersectingPoint1Y = p1.y;
+    }
+    else
+    {
+        *intersectingPoint1X = -MAXFLOAT;
+        *intersectingPoint1Y = -MAXFLOAT;
+    }
+    
+    if (inside2)
+    {
+        *intersectingPoint2X = p2.x;
+        *intersectingPoint2Y = p2.y;
+    }
+    else
+    {
+        *intersectingPoint2X = -MAXFLOAT;
+        *intersectingPoint2Y = -MAXFLOAT;
+    }
     
     return intersection && (inside1 || inside2);
 }
@@ -126,9 +156,9 @@
     CGPoint f = CGPointMake(pointA.x - circlePoint.x, pointA.y - circlePoint.y);
     CGFloat r = radius;
     
-    float a = [self dot:d andPoint:d];  //d.Dot( d ) ;
-    float b = 2* [self dot:f andPoint:d];   //f.Dot( d ) ;
-    float c = [self dot:f andPoint:f] - r*r ;
+    float a = [Maths dot:d andPoint:d];  //d.Dot( d ) ;
+    float b = 2* [Maths dot:f andPoint:d];   //f.Dot( d ) ;
+    float c = [Maths dot:f andPoint:f] - r*r ;
     
     float discriminant = b*b-4*a*c;
     if( discriminant < 0 ) // &lt;
@@ -185,63 +215,75 @@
 
 #pragma tools
 
-- (float) dot:(CGPoint)p1 andPoint:(CGPoint)p2
-{
-	return (p1.x * p2.x) + (p1.y * p2.y);
-}
 
-// http://www.dreamincode.net/forums/topic/277514-normalize-angle-and-radians/
-- (double) wrap:(double) value max:(double) max min:(double) min
-{
-    value -= min;
-    max -= min;
-    if (max == 0)
-        return min;
-    
-    value = fmod(value, max); // value % max;
-    value += min;
-    while (value < min)
-    {
-        value += max;
-    }
-    
-    return value;
-}
 
 - (void) draw
 {
-    CGFloat colourOrange[4] = {1.0f, 0.5f, 0.0f, 1.0f};
-    CGFloat colourWhite[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
     
     
+    // Update angle
+    double deltaY = self.pointA.y - self.pointB.y;
+    double deltaX = self.pointA.x - self.pointB.x;
+    //self.angle = [Maths wrap:M_2_PI - atan2(deltaY, deltaX) max:M_PI min:-M_PI];
+    self.angle = atan2(deltaY, deltaX);
     
     // theta = 2 arcsin(c/[2r]),
-    CGFloat theta = 2 * asin(self.chord / (2 * self.radius));
+    double theta = 2 * asin(self.chord / (2 * self.radius));
 
-    CGFloat startPoint = -self.angle - (theta/2) - M_PI_2;
+    CGFloat startPoint = self.angle - (theta/2) - M_PI_2;
     CGFloat endPoint = startPoint + theta;
     
-    double height = self.radius - (self.radius * (1 - cos(theta/2)));
+    double height = self.radius - (self.radius * (1.0 - cos(theta/2)));
     double centreOfPointsX = self.pointA.x + 0.5 * (self.pointB.x - self.pointA.x);
     double centreOfPointsY = self.pointA.y + 0.5 * (self.pointB.y - self.pointA.y);
     double rotateAngle = self.angle + M_PI_2;
     
-    
-    
     CGAffineTransform transform = CGAffineTransformIdentity;
-    transform = CGAffineTransformRotate(transform, rotateAngle);
+    transform = CGAffineTransformTranslate(transform, self.pointA.x, self.pointA.y);
+    transform = CGAffineTransformRotate(transform, self.angle);
     transform = CGAffineTransformTranslate(transform, 0, height);
-    transform = CGAffineTransformRotate(transform, -rotateAngle);
-    transform = CGAffineTransformTranslate(transform, centreOfPointsX, centreOfPointsY);
-    CGPoint point = CGPointApplyAffineTransform(CGPointMake(0, 0), transform);
+    transform = CGAffineTransformRotate(transform, -self.angle);
+    transform = CGAffineTransformTranslate(transform, -self.pointA.x, -self.pointA.y);
+    CGPoint point = CGPointApplyAffineTransform(CGPointMake(centreOfPointsX, centreOfPointsY), transform);
     
-//    {
-//        CGContextRef c = UIGraphicsGetCurrentContext();
-//        CGContextSetStrokeColor(c, colourWhite);
-//        CGContextAddEllipseInRect(c, CGRectMake(point.x - self.radius, point.y - self.radius, self.radius*2, self.radius*2));
-//        CGContextStrokePath(c);
-//    }
+    {
+        CGFloat colourWhite[4] = {1.0f, 1.0f, 1.0f, 0.25f};
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGContextSetStrokeColor(c, colourWhite);
+        CGContextAddEllipseInRect(c, CGRectMake(point.x - self.radius, point.y - self.radius, self.radius*2, self.radius*2));
+        CGContextStrokePath(c);
+    }
+    
+    // points
+    {
+        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGContextSetStrokeColor(c, colour);
+        CGContextAddEllipseInRect(c, CGRectMake(self.pointA.x - 4, self.pointA.y - 4, 8, 8));
+        CGContextStrokePath(c);
+    }
+    {
+        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGContextSetStrokeColor(c, colour);
+        CGContextAddEllipseInRect(c, CGRectMake(self.pointB.x - 4, self.pointB.y - 4, 8, 8));
+        CGContextStrokePath(c);
+    }
+    
+    // 
+    {
+        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGContextSetStrokeColor(c, colour);
+        CGContextMoveToPoint(c
+                             , point.x
+                             , point.y);
+        CGContextAddLineToPoint(c
+                                , centreOfPointsX
+                                , centreOfPointsY);
+        CGContextStrokePath(c);
+    }
     
     
     BOOL clockwise = YES;
@@ -259,16 +301,17 @@
     
     
     
-//    {
-//        CGContextRef c = UIGraphicsGetCurrentContext();
-//        CGContextSetStrokeColor(c, colourYellow);
-//        CGContextMoveToPoint(c
-//                             , point.x + self.radius * cos(startPoint)
-//                             , point.y + self.radius * sin(startPoint));
-//        CGContextAddLineToPoint(c
-//                                , point.x + self.radius * cos(endPoint)
-//                                , point.y + self.radius * sin(endPoint));
-//        CGContextStrokePath(c);
-//    }
+    {
+        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGContextSetStrokeColor(c, colour);
+        CGContextMoveToPoint(c
+                             , point.x + self.radius * cos(startPoint)
+                             , point.y + self.radius * sin(startPoint));
+        CGContextAddLineToPoint(c
+                                , point.x + self.radius * cos(endPoint)
+                                , point.y + self.radius * sin(endPoint));
+        CGContextStrokePath(c);
+    }
 }
 @end

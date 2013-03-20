@@ -55,6 +55,7 @@
 
 - (void) drawTapPoint
 {
+#ifndef HIDE_PLAYER_BODY
     if ([[Level sharedInstance] playerPoints])
     {
         CGContextRef c = UIGraphicsGetCurrentContext();
@@ -84,6 +85,7 @@
 
         CGContextStrokePath(c);
     }
+#endif
     
     if ([[Level sharedInstance] playerPoints] && [[[Level sharedInstance] playerPoints] count] > 0)
     {
@@ -91,7 +93,7 @@
         CGPoint playerPoint = CGPointMake([[Level sharedInstance] playerPosition].x + [valPlayer0 CGPointValue].x, [[Level sharedInstance] playerPosition].y + [valPlayer0 CGPointValue].y);
         
         CGContextRef c = UIGraphicsGetCurrentContext();
-        CGFloat colour[4] = {0.0f, 0.0f, 1.0f, 1.0f};
+        CGFloat colour[4] = {1.0f, 1.0f, 1.0f, 1.0f};
         CGContextSetStrokeColor(c, colour);
         CGContextAddEllipseInRect(c, CGRectMake(playerPoint.x - 2, playerPoint.y - 2, 4, 4));
         CGContextStrokePath(c);

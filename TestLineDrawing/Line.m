@@ -60,7 +60,7 @@
     return NO;
 }
 
-- (BOOL) intersectionsPointB:(CGPoint) pointA pointA:(CGPoint) pointB
+- (BOOL) intersectionsPointA:(CGPoint) pointA pointB:(CGPoint) pointB
           intersectingPointX:(double*) intersectingPointX
           intersectingPointY:(double*) intersectingPointY
 {
