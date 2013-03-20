@@ -213,20 +213,31 @@
     return NO;
 }
 
-#pragma tools
-
-
+- (void) calculateAngle
+{
+    double deltaY;
+    double deltaX;
+    if (self.inward)
+    {
+        deltaY = self.pointA.y - self.pointB.y;
+        deltaX = self.pointA.x - self.pointB.x;
+    }
+    else
+    {
+        deltaY = self.pointB.y - self.pointA.y;
+        deltaX = self.pointB.x - self.pointA.x;
+    }
+    self.angle = atan2(deltaY, deltaX);
+}
 
 - (void) draw
 {
     CGFloat colourGeen[4] = {0.0f, 1.0f, 0.0f, 1.0f};
     
     
-    // Update angle
-    double deltaY = self.pointA.y - self.pointB.y;
-    double deltaX = self.pointA.x - self.pointB.x;
-    //self.angle = [Maths wrap:M_2_PI - atan2(deltaY, deltaX) max:M_PI min:-M_PI];
-    self.angle = atan2(deltaY, deltaX);
+    [self calculateAngle];
+    
+    NSLog(@"chord: %.05f, radius: %.05f, angle: %.05f", self.chord, self.radius, self.angle);
     
     // theta = 2 arcsin(c/[2r]),
     double theta = 2 * asin(self.chord / (2 * self.radius));
@@ -255,27 +266,26 @@
         CGContextStrokePath(c);
     }
     
+    CGFloat extraColour[4] = {self.inward ? 1.0f: 0.0f, 0.0f, 1.0f, 1.0f} ;
+    
     // points
     {
-        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
         CGContextRef c = UIGraphicsGetCurrentContext();
-        CGContextSetStrokeColor(c, colour);
+        CGContextSetStrokeColor(c, extraColour);
         CGContextAddEllipseInRect(c, CGRectMake(self.pointA.x - 4, self.pointA.y - 4, 8, 8));
         CGContextStrokePath(c);
     }
     {
-        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
         CGContextRef c = UIGraphicsGetCurrentContext();
-        CGContextSetStrokeColor(c, colour);
+        CGContextSetStrokeColor(c, extraColour);
         CGContextAddEllipseInRect(c, CGRectMake(self.pointB.x - 4, self.pointB.y - 4, 8, 8));
         CGContextStrokePath(c);
     }
     
-    // 
+    // height
     {
-        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
         CGContextRef c = UIGraphicsGetCurrentContext();
-        CGContextSetStrokeColor(c, colour);
+        CGContextSetStrokeColor(c, extraColour);
         CGContextMoveToPoint(c
                              , point.x
                              , point.y);
@@ -285,6 +295,18 @@
         CGContextStrokePath(c);
     }
     
+    // chord
+    {
+        CGContextRef c = UIGraphicsGetCurrentContext();
+        CGContextSetStrokeColor(c, extraColour);
+        CGContextMoveToPoint(c
+                             , point.x + self.radius * cos(startPoint)
+                             , point.y + self.radius * sin(startPoint));
+        CGContextAddLineToPoint(c
+                                , point.x + self.radius * cos(endPoint)
+                                , point.y + self.radius * sin(endPoint));
+        CGContextStrokePath(c);
+    }
     
     BOOL clockwise = YES;
     CGContextRef c = UIGraphicsGetCurrentContext();
@@ -301,17 +323,5 @@
     
     
     
-    {
-        CGFloat colour[4] = {1.0f, 0.0f, 1.0f, 1.0f};
-        CGContextRef c = UIGraphicsGetCurrentContext();
-        CGContextSetStrokeColor(c, colour);
-        CGContextMoveToPoint(c
-                             , point.x + self.radius * cos(startPoint)
-                             , point.y + self.radius * sin(startPoint));
-        CGContextAddLineToPoint(c
-                                , point.x + self.radius * cos(endPoint)
-                                , point.y + self.radius * sin(endPoint));
-        CGContextStrokePath(c);
-    }
 }
 @end

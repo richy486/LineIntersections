@@ -15,4 +15,4 @@
 
 #define TOLL 0.4
 #define HIDE_PLAYER_BODY
-#define LEVEL_OFFSET 100.0
+#define LEVEL_OFFSET 400.0

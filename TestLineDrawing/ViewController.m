@@ -46,23 +46,23 @@
     
     CGFloat mult = 5.0;
     
-    NSArray *levelPoints = [NSArray arrayWithObjects:
-                            [NSValue valueWithCGPoint:CGPointMake(25.0 * mult + LEVEL_OFFSET,  0.0 * mult + LEVEL_OFFSET)]
-                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
-                       ,    [NSValue valueWithCGPoint:CGPointMake(37.5 * mult + LEVEL_OFFSET, 37.5 * mult + LEVEL_OFFSET)]
-                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 50.0 * mult + LEVEL_OFFSET)]
-                       ,    [NSValue valueWithCGPoint:CGPointMake(100.0 * mult + LEVEL_OFFSET, 0.0 * mult + LEVEL_OFFSET)]
-                       ,    [NSValue valueWithCGPoint:CGPointMake(112.5 * mult + LEVEL_OFFSET, 12.5 * mult + LEVEL_OFFSET)]
-                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 75.0 * mult + LEVEL_OFFSET)]
-                       ,    [NSValue valueWithCGPoint:CGPointMake( 0.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
-                       , nil];
-//    const float size = 20.0;
 //    NSArray *levelPoints = [NSArray arrayWithObjects:
-//                            [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET,  -size * mult + LEVEL_OFFSET)]
-//                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, -size * mult + LEVEL_OFFSET)]
-//                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
-//                            ,    [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
-//                            , nil];
+//                            [NSValue valueWithCGPoint:CGPointMake(25.0 * mult + LEVEL_OFFSET,  0.0 * mult + LEVEL_OFFSET)]
+//                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
+//                       ,    [NSValue valueWithCGPoint:CGPointMake(37.5 * mult + LEVEL_OFFSET, 37.5 * mult + LEVEL_OFFSET)]
+//                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 50.0 * mult + LEVEL_OFFSET)]
+//                       ,    [NSValue valueWithCGPoint:CGPointMake(100.0 * mult + LEVEL_OFFSET, 0.0 * mult + LEVEL_OFFSET)]
+//                       ,    [NSValue valueWithCGPoint:CGPointMake(112.5 * mult + LEVEL_OFFSET, 12.5 * mult + LEVEL_OFFSET)]
+//                       ,    [NSValue valueWithCGPoint:CGPointMake(50.0 * mult + LEVEL_OFFSET, 75.0 * mult + LEVEL_OFFSET)]
+//                       ,    [NSValue valueWithCGPoint:CGPointMake( 0.0 * mult + LEVEL_OFFSET, 25.0 * mult + LEVEL_OFFSET)]
+//                       , nil];
+    const float size = 20.0;
+    NSArray *levelPoints = [NSArray arrayWithObjects:
+                            [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET,  -size * mult + LEVEL_OFFSET)]
+                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, -size * mult + LEVEL_OFFSET)]
+                            ,    [NSValue valueWithCGPoint:CGPointMake(size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
+                            ,    [NSValue valueWithCGPoint:CGPointMake(-size * mult + LEVEL_OFFSET, size * mult + LEVEL_OFFSET)]
+                            , nil];
     
     NSMutableArray *levelLines = [NSMutableArray arrayWithCapacity:[levelPoints count]];
     for (NSInteger levelIndex = 1; levelIndex < [levelPoints count] + 1; ++levelIndex)
@@ -76,17 +76,25 @@
         NSValue *valB = [levelPoints objectAtIndex:indexB];
         CGPoint pointB = [valB CGPointValue];
         
-        if (levelIndex == 5)
+        if (levelIndex == 4)
         {
             double chord = sqrt(pow((pointB.x - pointA.x), 2.0) + pow((pointB.y - pointA.y), 2.0));
-            double radius = chord * 0.55;
+            double radius = chord * 0.75;
             
-            double deltaY = pointA.y - pointB.y;
-            double deltaX = pointA.x - pointB.x;
+            // 
+            double deltaY = pointB.y - pointA.y;
+            double deltaX = pointB.x - pointA.x;
+
+//            // 
+//            double deltaY = pointA.y - pointB.y;
+//            double deltaX = pointA.x - pointB.x;
+            
             double angle = atan2(deltaY, deltaX);
             
-            NSLog(@"chord: %.05f, radius: %.05f, angle: %.05f", chord, radius, angle);
-            [levelLines addObject:[ArcLine lineWithPointA:pointA pointB:pointB radius:radius chord: chord angle:angle]];
+            ArcLine *arcLine = [ArcLine lineWithPointA:pointA pointB:pointB radius:radius chord: chord angle:angle];
+            [arcLine setInward:angle < 0];
+            
+            [levelLines addObject:arcLine];
         }
         else
         {
