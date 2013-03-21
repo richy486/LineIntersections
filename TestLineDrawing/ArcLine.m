@@ -174,7 +174,7 @@
     
     
     double distanceToCentre = sqrt(pow(point.x - centrePoint.x, 2) + pow(point.y - centrePoint.y, 2));
-    NSLog(@"distanceToCentre: %.05f, radius: %.05f", distanceToCentre, self.radius);
+//    NSLog(@"distanceToCentre: %.05f, radius: %.05f", distanceToCentre, self.radius);
     
     if (distanceToCentre <= self.radius)
     {

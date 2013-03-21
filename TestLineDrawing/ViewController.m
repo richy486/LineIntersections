@@ -291,22 +291,28 @@
             CGPoint pointPlayer_a = CGPointMake(0.0, playerPoint.y);
             CGPoint pointPlayer_b = playerPoint;
             
+            
             for (Line *line in levelLines)
             {
-                CGPoint point2a = line.pointA;
-                CGPoint point2b = line.pointB;
-                
                 double x = 0.0;
                 double y = 0.0;
                 
-                if ([line intersectionsPointA:pointPlayer_a pointB:pointPlayer_b intersectingPointX:&x intersectingPointY:&y])
+                // http://alienryderflex.com/polygon/ - figure 4
+                CGPoint linePointA = line.pointA;
+                CGPoint linePointB = line.pointB;
+                if (line.pointA.y >= playerPoint.y - TOLL && line.pointA.y <= playerPoint.y + TOLL)
                 {
-                    BOOL found = [self checkCornersWithPlayerPoint:playerPoint point2a:point2a point2b:point2b intersectingPoints:intersectingPoints intersectingLines:intersectingLines intersectionX:x intersectionY:y];
-                    if (!found)
-                    {
-                        [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:point2a point2b:point2b]];
-                        intersectionsCount++;
-                    }
+                    linePointA = CGPointMake(linePointA.x, linePointA.y - 1.0);
+                }
+                if (line.pointB.y >= playerPoint.y - TOLL && line.pointB.y <= playerPoint.y + TOLL)
+                {
+                    linePointB = CGPointMake(linePointB.x, linePointB.y - 1.0);
+                }
+                
+                if ([Line intersectionsPoint1a:pointPlayer_a point1b:pointPlayer_b point2a:linePointA point2b:linePointB intersectingPointX:&x intersectingPointY:&y])
+                {
+                    [intersectingPoints addObject:[Intersection intersectionWithX:x Y:y point1a:pointPlayer_a point1b:pointPlayer_b point2a:linePointA point2b:linePointB]];
+                    intersectionsCount++;
                 }
             }
         }

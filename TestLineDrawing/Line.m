@@ -36,13 +36,14 @@
     double det = A1*B2 - A2*B1;
     
     double x, y;
-    if(det == 0){
+    if (det == 0)
+    {
         return NO;
-    }else{
+    }
+    else
+    {
         x = (B2*C1 - B1*C2)/det;
         y = (A1*C2 - A2*C1)/det;
-        
-        
     }
     
     BOOL onLineX1 = MIN(point1a.x, point1b.x) <= x + TOLL && x - TOLL <= MAX(point1a.x, point1b.x);
